@@ -14,7 +14,8 @@ func TestCreateUserWithSuccess(t *testing.T) {
 
 	authContainer := core.NewAuthContainer(db)
 
-	err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	usr, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, usr)
 	assert.Nil(t, err)
 }
 
@@ -24,11 +25,14 @@ func TestNotCreateUserWithEmailReadyInUse(t *testing.T) {
 
 	authContainer := core.NewAuthContainer(db)
 
-	err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	usr, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, usr)
 	assert.Nil(t, err)
 
-	err = authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	usr, err = authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.Nil(t, usr)
 	assert.Equal(t, core.ErrUserAlreadyExists, err)
+
 }
 
 func TestAuthenticateWithSuccess(t *testing.T) {
@@ -37,12 +41,13 @@ func TestAuthenticateWithSuccess(t *testing.T) {
 
 	authContainer := core.NewAuthContainer(db)
 
-	err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	usr, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, usr)
 	assert.Nil(t, err)
 
-	user, err := authContainer.AuthenticateUser(context.Background(), "mail@mail.com", "102030")
+	user, err := authContainer.AuthenticateUser(context.Background(), usr.Email, "102030")
 	assert.Nil(t, err)
-	assert.Equal(t, "foo", user.Name)
+	assert.Equal(t, usr.ID, user.ID)
 }
 
 func TestFailAuthenticateWithInvalidEmail(t *testing.T) {
@@ -62,10 +67,66 @@ func TestFailAuthenticateWithInvalidPassword(t *testing.T) {
 
 	authContainer := core.NewAuthContainer(db)
 
-	err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	user, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, user)
 	assert.Nil(t, err)
 
-	user, err := authContainer.AuthenticateUser(context.Background(), "mail@mail.com", "10203040")
+	user, err = authContainer.AuthenticateUser(context.Background(), user.Email, "invalid")
 	assert.Nil(t, user)
 	assert.Equal(t, err, core.ErrInvalidCredentials)
+}
+
+func TestUpdateWithSuccess(t *testing.T) {
+	db := core.CreateTempDB()
+	defer db.Close()
+
+	authContainer := core.NewAuthContainer(db)
+
+	user, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	user, err = authContainer.AuthenticateUser(context.Background(), "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	newName := "new name"
+	newMail := "bar"
+	newPassword := "102030"
+	err = authContainer.UpdateUser(context.Background(), user, &newName, &newMail, &newPassword)
+	assert.NoError(t, err)
+}
+
+func TestUpdateWithNullFields(t *testing.T) {
+	db := core.CreateTempDB()
+	defer db.Close()
+
+	authContainer := core.NewAuthContainer(db)
+
+	user, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	err = authContainer.UpdateUser(context.Background(), user, nil, nil, nil)
+	assert.NoError(t, err)
+}
+
+func TestFailUpdateWithAlreadyExistingMail(t *testing.T) {
+	db := core.CreateTempDB()
+	defer db.Close()
+
+	authContainer := core.NewAuthContainer(db)
+
+	user, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	user2, err := authContainer.CreateUser(context.Background(), "foo", "mail2@mail.com", "102030")
+	assert.NotNil(t, user2)
+	assert.NoError(t, err)
+
+	newName := "new name"
+	newPassword := "102030"
+	err = authContainer.UpdateUser(context.Background(), user, &newName, &user2.Email, &newPassword)
+	assert.Error(t, err, core.ErrUserAlreadyExists)
 }

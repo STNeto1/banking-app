@@ -31,10 +31,12 @@ func NewAuthContainer(connection *sqlx.DB) *AuthContainer {
 	}
 }
 
-func (ac *AuthContainer) CreateUser(ctx context.Context, name, email, password string) error {
+func (ac *AuthContainer) CreateUser(ctx context.Context, name, email, password string) (*User, error) {
 	tx, err := ac.connection.BeginTxx(ctx, nil)
 	if err != nil {
-		return err
+		log.Println("failed to begin transaction", err)
+
+		return nil, ErrInternalError
 	}
 
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().
@@ -50,13 +52,13 @@ func (ac *AuthContainer) CreateUser(ctx context.Context, name, email, password s
 		log.Println("failed to scan", err)
 
 		rollbackx(tx)
-		return ErrInternalError
+		return nil, ErrInternalError
 	}
 
 	if count > 0 {
 		rollbackx(tx)
 
-		return ErrUserAlreadyExists
+		return nil, ErrUserAlreadyExists
 	}
 
 	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -64,12 +66,19 @@ func (ac *AuthContainer) CreateUser(ctx context.Context, name, email, password s
 		log.Println("failed to generate password", err)
 
 		rollbackx(tx)
-		return ErrInternalError
+		return nil, ErrInternalError
+	}
+
+	user := User{
+		ID:       ulid.Make().String(),
+		Name:     name,
+		Email:    email,
+		Password: string(hashedPwd),
 	}
 
 	_sql, args = sqlbuilder.PostgreSQL.NewInsertBuilder().
 		InsertInto("users").Cols("id", "name", "email", "password").
-		Values(ulid.Make().String(), name, email, string(hashedPwd)).
+		Values(user.ID, user.Name, user.Email, user.Password).
 		Build()
 
 	_, err = tx.ExecContext(ctx, _sql, args...)
@@ -77,10 +86,10 @@ func (ac *AuthContainer) CreateUser(ctx context.Context, name, email, password s
 		log.Println("failed to insert", err)
 
 		rollbackx(tx)
-		return ErrInternalError
+		return nil, ErrInternalError
 	}
 
-	return tx.Commit()
+	return &user, tx.Commit()
 }
 
 func (ac *AuthContainer) AuthenticateUser(ctx context.Context, email, password string) (*User, error) {
@@ -109,4 +118,77 @@ func (ac *AuthContainer) AuthenticateUser(ctx context.Context, email, password s
 	}
 
 	return &user, nil
+}
+
+func (ac *AuthContainer) UpdateUser(ctx context.Context, currentUser *User, name, email, password *string) error {
+	if email == nil {
+		email = &currentUser.Email
+	}
+
+	if name == nil {
+		name = &currentUser.Name
+	}
+
+	tx, err := ac.connection.BeginTxx(ctx, nil)
+	if err != nil {
+		log.Println("failed to begin transaction", err)
+		return ErrInternalError
+	}
+
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users")
+
+	if currentUser.Email != *email {
+		_sql, args := sb.Select("count(*)").
+			Where(sb.Equal("email", email)).
+			Where(sb.NotEqual("id", currentUser.ID)).
+			Limit(1).
+			Build()
+
+		res := tx.QueryRowxContext(ctx, _sql, args...)
+		var count int
+		if err := res.Scan(&count); err != nil {
+			log.Println("failed to scan", err)
+
+			rollbackx(tx)
+			return ErrInternalError
+		}
+
+		if count > 0 {
+			rollbackx(tx)
+			return ErrUserAlreadyExists
+		}
+
+	}
+
+	if password != nil {
+		hashedPwd, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Println("failed to generate password", err)
+
+			rollbackx(tx)
+			return ErrInternalError
+		}
+
+		_pwd := string(hashedPwd)
+		password = &_pwd
+	} else {
+		password = &currentUser.Password
+	}
+
+	ub := sqlbuilder.PostgreSQL.NewUpdateBuilder().Update("users")
+	_sql, args := ub.Set(
+		ub.Assign("name", *name),
+		ub.Assign("email", *email),
+		ub.Assign("password", *password),
+	).Where(ub.Equal("id", currentUser.ID)).Build()
+
+	_, err = tx.ExecContext(ctx, _sql, args...)
+	if err != nil {
+		log.Println("failed to update", err)
+
+		rollbackx(tx)
+		return ErrInternalError
+	}
+
+	return tx.Commit()
 }
