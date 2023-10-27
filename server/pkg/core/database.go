@@ -43,5 +43,17 @@ func getSchemas() []string {
 
 	addSoftDeleteToUsersTableSql, _ := sqlbuilder.Buildf("ALTER TABLE users ADD COLUMN deleted_at timestamp").Build()
 
-	return []string{usersTableSql, addSoftDeleteToUsersTableSql}
+	invitesTableSql, _ := sqlbuilder.NewCreateTableBuilder().
+		CreateTable("invites").
+		IfNotExists().
+		Define("id", "varchar(26)", "PRIMARY KEY").
+		Define("from_user_id", "varchar(26)", "NOT NULL", "REFERENCES users(id)").
+		Define("to_user_id", "varchar(26)", "NOT NULL", "REFERENCES users(id)").
+		Define("status", "varchar(20)", "NOT NULL").
+		Define("created_at", "timestamp", "NOT NULL DEFAULT CURRENT_TIMESTAMP").
+		Build()
+
+	invitesUniqueIndex, _ := sqlbuilder.Buildf("CREATE UNIQUE INDEX invites_unique_key ON invites (from_user_id, to_user_id)").Build()
+
+	return []string{usersTableSql, addSoftDeleteToUsersTableSql, invitesTableSql, invitesUniqueIndex}
 }

@@ -91,7 +91,12 @@ func (ac *AuthContainer) CreateUser(ctx context.Context, name, email, password s
 		return nil, ErrInternalError
 	}
 
-	return &user, tx.Commit()
+	if err := tx.Commit(); err != nil {
+		log.Println("failed to commit", err)
+
+		return nil, ErrInternalError
+	}
+	return &user, nil
 }
 
 func (ac *AuthContainer) AuthenticateUser(ctx context.Context, email, password string) (*User, error) {
@@ -192,7 +197,12 @@ func (ac *AuthContainer) UpdateUser(ctx context.Context, currentUser *User, name
 		return ErrInternalError
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		log.Println("failed to commit", err)
+
+		return ErrInternalError
+	}
+	return nil
 }
 
 func (ac *AuthContainer) SoftDeleteUser(ctx context.Context, currentUser *User) error {
@@ -215,7 +225,12 @@ func (ac *AuthContainer) SoftDeleteUser(ctx context.Context, currentUser *User) 
 		return ErrInternalError
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		log.Println("failed to commit", err)
+
+		return ErrInternalError
+	}
+	return nil
 }
 
 func (ac *AuthContainer) GetUserByID(ctx context.Context, id string) (*User, error) {
