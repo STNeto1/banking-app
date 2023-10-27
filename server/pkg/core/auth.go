@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
@@ -180,6 +181,29 @@ func (ac *AuthContainer) UpdateUser(ctx context.Context, currentUser *User, name
 		ub.Assign("name", *name),
 		ub.Assign("email", *email),
 		ub.Assign("password", *password),
+	).Where(ub.Equal("id", currentUser.ID)).Build()
+
+	_, err = tx.ExecContext(ctx, _sql, args...)
+	if err != nil {
+		log.Println("failed to update", err)
+
+		rollbackx(tx)
+		return ErrInternalError
+	}
+
+	return tx.Commit()
+}
+
+func (ac *AuthContainer) SoftDeleteUser(ctx context.Context, currentUser *User) error {
+	tx, err := ac.connection.BeginTxx(ctx, nil)
+	if err != nil {
+		log.Println("failed to begin transaction", err)
+		return ErrInternalError
+	}
+
+	ub := sqlbuilder.PostgreSQL.NewUpdateBuilder().Update("users")
+	_sql, args := ub.Set(
+		ub.Assign("deleted_at", time.Now()),
 	).Where(ub.Equal("id", currentUser.ID)).Build()
 
 	_, err = tx.ExecContext(ctx, _sql, args...)

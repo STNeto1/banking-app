@@ -41,5 +41,7 @@ func getSchemas() []string {
 		Define("created_at", "timestamp", "NOT NULL DEFAULT CURRENT_TIMESTAMP").
 		Build()
 
-	return []string{usersTableSql}
+	addSoftDeleteToUsersTableSql, _ := sqlbuilder.Buildf("ALTER TABLE users ADD COLUMN deleted_at timestamp").Build()
+
+	return []string{usersTableSql, addSoftDeleteToUsersTableSql}
 }

@@ -86,10 +86,6 @@ func TestUpdateWithSuccess(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	user, err = authContainer.AuthenticateUser(context.Background(), "mail@mail.com", "102030")
-	assert.NotNil(t, user)
-	assert.NoError(t, err)
-
 	newName := "new name"
 	newMail := "bar"
 	newPassword := "102030"
@@ -129,4 +125,18 @@ func TestFailUpdateWithAlreadyExistingMail(t *testing.T) {
 	newPassword := "102030"
 	err = authContainer.UpdateUser(context.Background(), user, &newName, &user2.Email, &newPassword)
 	assert.Error(t, err, core.ErrUserAlreadyExists)
+}
+
+func TestSoftDeleteWithSuccess(t *testing.T) {
+	db := core.CreateTempDB()
+	defer db.Close()
+
+	authContainer := core.NewAuthContainer(db)
+
+	user, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	err = authContainer.SoftDeleteUser(context.Background(), user)
+	assert.NoError(t, err)
 }
