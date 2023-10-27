@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"time"
@@ -13,6 +14,8 @@ import (
 
 var (
 	ErrInviteAlreadyExists = fmt.Errorf("Invite already exists")
+	ErrInviteDoesNotExists = fmt.Errorf("Invite does not exists")
+	ErrInviteNotPending    = fmt.Errorf("Invite is not pending")
 )
 
 type InviteContainer struct {
@@ -183,4 +186,61 @@ func (ic *InviteContainer) GetUserReceivedInvites(ctx context.Context, userID st
 	}
 
 	return invites, nil
+}
+
+func (ic *InviteContainer) CancelInvite(ctx context.Context, userID, inviteID string) error {
+
+	tx, err := ic.connection.BeginTxx(ctx, nil)
+	if err != nil {
+		log.Println("failed to begin transaction", err)
+
+		return ErrInternalError
+	}
+
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("invites")
+	_sql, args := sb.Select("*").
+		Where(sb.Equal("id", inviteID)).
+		Where(sb.Equal("from_user_id", userID)).
+		Build()
+
+	var invite Invite
+	row := tx.QueryRowxContext(ctx, _sql, args...)
+	err = row.StructScan(&invite)
+	if err != nil {
+		rollbackx(tx)
+
+		if err == sql.ErrNoRows {
+			return ErrInviteDoesNotExists
+		}
+
+		log.Println("failed to scan invite", err)
+		return ErrInternalError
+	}
+
+	if invite.Status != InviteStatusPending {
+		rollbackx(tx)
+
+		return ErrInviteNotPending
+	}
+
+	ub := sqlbuilder.PostgreSQL.NewUpdateBuilder().Update("invites")
+	_sql, args = ub.Set(
+		ub.Assign("status", InviteStatusCanceled),
+	).Where(ub.Equal("id", inviteID)).Build()
+
+	_, err = tx.ExecContext(ctx, _sql, args...)
+	if err != nil {
+		log.Println("failed to update", err)
+
+		rollbackx(tx)
+		return ErrInternalError
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Println("failed to commit transaction", err)
+
+		return ErrInternalError
+	}
+
+	return nil
 }

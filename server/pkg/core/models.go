@@ -14,6 +14,7 @@ type InviteStatus string
 // status enum
 const (
 	InviteStatusPending  InviteStatus = "pending"
+	InviteStatusCanceled InviteStatus = "canceled"
 	InviteStatusAccepted InviteStatus = "accepted"
 	InviteStatusRejected InviteStatus = "rejected"
 )
