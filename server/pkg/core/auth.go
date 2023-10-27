@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -80,4 +81,32 @@ func (ac *AuthContainer) CreateUser(ctx context.Context, name, email, password s
 	}
 
 	return tx.Commit()
+}
+
+func (ac *AuthContainer) AuthenticateUser(ctx context.Context, email, password string) (*User, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users")
+	_sql, args := sb.Select("*").
+		Where(sb.Equal("email", email)).
+		Limit(1).
+		Build()
+
+	res := ac.connection.QueryRowxContext(ctx, _sql, args...)
+	var user User
+	err := res.StructScan(&user)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrUserDoesNotExists
+		}
+
+		log.Println("failed to scan", err)
+
+		return nil, ErrInternalError
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return nil, ErrInvalidCredentials
+	}
+
+	return &user, nil
 }
