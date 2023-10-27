@@ -3,6 +3,7 @@ module github.com/stneto1/banking-server
 go 1.21.3
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/huandu/go-sqlbuilder v1.22.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/mattn/go-sqlite3 v1.14.17

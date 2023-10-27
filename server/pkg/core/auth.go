@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 	"github.com/oklog/ulid/v2"
@@ -239,4 +240,28 @@ func (ac *AuthContainer) GetUserByID(ctx context.Context, id string) (*User, err
 	}
 
 	return &user, nil
+}
+
+func (ac *AuthContainer) CreateToken(user *User) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+	})
+
+	return token.SignedString(ac.tokenSecret)
+}
+
+func (ac *AuthContainer) UseUserID(token string) (string, error) {
+	decodedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return ac.tokenSecret, nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := decodedToken.Claims.(jwt.MapClaims); ok && decodedToken.Valid {
+		return claims["sub"].(string), nil
+	}
+
+	return "", ErrInvalidCredentials
 }

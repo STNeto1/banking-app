@@ -173,3 +173,19 @@ func TestInvalidGetUserByIDSoftDelete(t *testing.T) {
 	assert.Nil(t, usr)
 	assert.Equal(t, err, core.ErrUserDoesNotExists)
 }
+
+func TestCreateToken(t *testing.T) {
+	authContainer := core.NewAuthContainer(nil)
+
+	user := core.User{
+		ID: "some",
+	}
+
+	token, err := authContainer.CreateToken(&user)
+	assert.NotEmpty(t, token)
+	assert.NoError(t, err)
+
+	userID, err := authContainer.UseUserID(token)
+	assert.NoError(t, err)
+	assert.Equal(t, user.ID, userID)
+}
