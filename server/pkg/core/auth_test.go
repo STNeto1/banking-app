@@ -140,3 +140,36 @@ func TestSoftDeleteWithSuccess(t *testing.T) {
 	err = authContainer.SoftDeleteUser(context.Background(), user)
 	assert.NoError(t, err)
 }
+
+func TestGetUserByIDWithSuccess(t *testing.T) {
+	db := core.CreateTempDB()
+	defer db.Close()
+
+	authContainer := core.NewAuthContainer(db)
+
+	user, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	usr, err := authContainer.GetUserByID(context.Background(), user.ID)
+	assert.NotNil(t, usr)
+	assert.NoError(t, err)
+}
+
+func TestInvalidGetUserByIDSoftDelete(t *testing.T) {
+	db := core.CreateTempDB()
+	defer db.Close()
+
+	authContainer := core.NewAuthContainer(db)
+
+	user, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	err = authContainer.SoftDeleteUser(context.Background(), user)
+	assert.NoError(t, err)
+
+	usr, err := authContainer.GetUserByID(context.Background(), user.ID)
+	assert.Nil(t, usr)
+	assert.Equal(t, err, core.ErrUserDoesNotExists)
+}

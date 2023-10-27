@@ -216,3 +216,27 @@ func (ac *AuthContainer) SoftDeleteUser(ctx context.Context, currentUser *User) 
 
 	return tx.Commit()
 }
+
+func (ac *AuthContainer) GetUserByID(ctx context.Context, id string) (*User, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users")
+	_sql, args := sb.Select("*").
+		Where(sb.Equal("id", id)).
+		Where(sb.IsNull("deleted_at")).
+		Limit(1).
+		Build()
+
+	res := ac.connection.QueryRowxContext(ctx, _sql, args...)
+	var user User
+	err := res.StructScan(&user)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrUserDoesNotExists
+		}
+
+		log.Println("failed to scan", err)
+
+		return nil, ErrInternalError
+	}
+
+	return &user, nil
+}
