@@ -60,7 +60,7 @@ func (ic *InviteContainer) CreateInvite(ctx context.Context, fromUserID, toUserI
 	}
 
 	invite := Invite{
-		ID:         ulid.MustNew(ulid.Now(), nil).String(),
+		ID:         ulid.Make().String(),
 		FromUserID: fromUserID,
 		ToUserID:   toUserID,
 		Status:     InviteStatusPending,
@@ -87,4 +87,52 @@ func (ic *InviteContainer) CreateInvite(ctx context.Context, fromUserID, toUserI
 	}
 
 	return &invite, nil
+}
+
+func (ic *InviteContainer) GetUserSentInvites(ctx context.Context, userID string) ([]Invite, error) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("invites")
+
+	_sql, args := sb.Select("invites.id as invite_id",
+		"invites.status as invite_status",
+		"invites.created_at as invite_created_at",
+		"users.id as user_id",
+		"users.name as user_name",
+		"users.email as user_email").
+		Where(sb.Equal("invites.from_user_id", userID)).
+		JoinWithOption(sqlbuilder.LeftJoin, "users", "invites.to_user_id = users.id").
+		Build()
+
+	rows, err := ic.connection.QueryxContext(ctx, _sql, args...)
+	if err != nil {
+		log.Println("failed to query", err)
+
+		return nil, ErrInternalError
+	}
+	defer rows.Close()
+
+	var invites []Invite
+	for rows.Next() {
+		var row inviteUserRow
+		err = rows.StructScan(&row)
+		if err != nil {
+			log.Println("failed to scan", err)
+
+			return nil, ErrInternalError
+		}
+
+		invites = append(invites, Invite{
+			ID:         row.InviteID,
+			FromUserID: userID,
+			ToUserID:   row.UserID,
+			User: &User{
+				ID:    row.UserID,
+				Name:  row.UserName,
+				Email: row.UserEmail,
+			},
+			Status:    InviteStatus(row.Status),
+			CreatedAt: row.CreatedAt,
+		})
+	}
+
+	return invites, nil
 }

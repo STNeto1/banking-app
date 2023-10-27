@@ -24,4 +24,17 @@ type Invite struct {
 	ToUserID   string       `db:"to_user_id"`
 	Status     InviteStatus `db:"status"`
 	CreatedAt  string       `db:"created_at"`
+	User       *User        `db:"-"`
 }
+
+// models for sql queries
+type inviteUserRow struct {
+	InviteID  string `db:"invite_id"`
+	Status    string `db:"invite_status"`
+	CreatedAt string `db:"invite_created_at"`
+	UserID    string `db:"user_id"`
+	UserName  string `db:"user_name"`
+	UserEmail string `db:"user_email"`
+}
+
+//"invites.id", "invites.to_user_id", "invites.status", "invites.created_at", "users.name", "users.email").
