@@ -55,5 +55,17 @@ func getSchemas() []string {
 
 	invitesUniqueIndex, _ := sqlbuilder.Buildf("CREATE UNIQUE INDEX invites_unique_key ON invites (from_user_id, to_user_id)").Build()
 
-	return []string{usersTableSql, addSoftDeleteToUsersTableSql, invitesTableSql, invitesUniqueIndex}
+	// sql of a "friends" kind of table between users using many to many relationship
+	friendsTableSql, _ := sqlbuilder.NewCreateTableBuilder().
+		CreateTable("friends").
+		IfNotExists().
+		Define("id", "varchar(26)", "PRIMARY KEY").
+		Define("user_id", "varchar(26)", "NOT NULL", "REFERENCES users(id)").
+		Define("friend_id", "varchar(26)", "NOT NULL", "REFERENCES users(id)").
+		Define("created_at", "timestamp", "NOT NULL DEFAULT CURRENT_TIMESTAMP").
+		Build()
+
+	friendsUniqueIndex, _ := sqlbuilder.Buildf("CREATE UNIQUE INDEX friends_unique_key ON friends (user_id, friend_id)").Build()
+
+	return []string{usersTableSql, addSoftDeleteToUsersTableSql, invitesTableSql, invitesUniqueIndex, friendsTableSql, friendsUniqueIndex}
 }

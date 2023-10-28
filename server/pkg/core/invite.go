@@ -252,10 +252,10 @@ func (ic *InviteContainer) AcceptInvite(ctx context.Context, userID, inviteID st
 		return ErrInternalError
 	}
 
-	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("invites")
-	_sql, args := sb.Select("*").
-		Where(sb.Equal("id", inviteID)).
-		Where(sb.Equal("to_user_id", userID)).
+	invitesSb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("invites")
+	_sql, args := invitesSb.Select("*").
+		Where(invitesSb.Equal("id", inviteID)).
+		Where(invitesSb.Equal("to_user_id", userID)).
 		Build()
 
 	var invite Invite
@@ -286,6 +286,19 @@ func (ic *InviteContainer) AcceptInvite(ctx context.Context, userID, inviteID st
 	_, err = tx.ExecContext(ctx, _sql, args...)
 	if err != nil {
 		log.Println("failed to update", err)
+
+		rollbackx(tx)
+		return ErrInternalError
+	}
+
+	friendsIb := sqlbuilder.PostgreSQL.NewInsertBuilder().InsertInto("friends")
+	_sql, args = friendsIb.Cols("id", "user_id", "friend_id").
+		Values(ulid.Make().String(), invite.FromUserID, invite.ToUserID).
+		Build()
+
+	_, err = tx.ExecContext(ctx, _sql, args...)
+	if err != nil {
+		log.Println("failed to create friend", err)
 
 		rollbackx(tx)
 		return ErrInternalError
