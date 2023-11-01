@@ -23,7 +23,7 @@ func TestCreateInviteWithSuccess(t *testing.T) {
 	assert.NotNil(t, toUser)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 }
@@ -43,11 +43,11 @@ func TestFailCreateInviteWithDuplicateInvite(t *testing.T) {
 	assert.NotNil(t, toUser)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
-	invite, err = inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.ID)
+	invite, err = inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.Email)
 	assert.Nil(t, invite)
 	assert.Equal(t, err, core.ErrInviteAlreadyExists)
 }
@@ -67,11 +67,11 @@ func TestListUserSentInvites(t *testing.T) {
 	assert.NotNil(t, toUser)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
-	_, err = inviteContainer.CreateInvite(context.Background(), toUser.ID, fromUser.ID)
+	_, err = inviteContainer.CreateInvite(context.Background(), toUser.ID, fromUser.Email)
 	assert.NoError(t, err)
 
 	invites, err := inviteContainer.GetUserSentInvites(context.Background(), fromUser.ID)
@@ -95,11 +95,11 @@ func TestListUserReceivedInvites(t *testing.T) {
 	assert.NotNil(t, toUser)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), fromUser.ID, toUser.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
-	_, err = inviteContainer.CreateInvite(context.Background(), toUser.ID, fromUser.ID)
+	_, err = inviteContainer.CreateInvite(context.Background(), toUser.ID, fromUser.Email)
 	assert.NoError(t, err)
 
 	invites, err := inviteContainer.GetUserReceivedInvites(context.Background(), fromUser.ID)
@@ -119,7 +119,7 @@ func TestCancelInvite(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -138,7 +138,7 @@ func TestErrorCancelInviteAlreadyCanceled(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -164,7 +164,7 @@ func TestErrorCancelInviteFromAnotherUser(t *testing.T) {
 	assert.NotNil(t, anotherUser)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -183,7 +183,7 @@ func TestAcceptInvite(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -202,7 +202,7 @@ func TestErrorAcceptNotPendingInvite(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -228,7 +228,7 @@ func TestErrorAcceptInviteFromAnotherUser(t *testing.T) {
 	assert.NotNil(t, anotherUser)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -247,7 +247,7 @@ func TestRejectInvite(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -266,7 +266,7 @@ func TestErrorRejectNotPendingInvite(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
@@ -292,7 +292,7 @@ func TestErrorRejectInviteFromAnotherUser(t *testing.T) {
 	assert.NotNil(t, anotherUser)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.ID)
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 

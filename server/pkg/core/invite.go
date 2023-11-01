@@ -19,12 +19,14 @@ var (
 )
 
 type InviteContainer struct {
-	connection *sqlx.DB
+	connection    *sqlx.DB
+	userContainer *UserContainer
 }
 
 func NewInviteContainer(connection *sqlx.DB) *InviteContainer {
 	return &InviteContainer{
-		connection: connection,
+		connection:    connection,
+		userContainer: NewUserContainer(connection),
 	}
 }
 
@@ -48,8 +50,17 @@ func (ic *InviteContainer) UserHasInvitedUser(ctx context.Context, userID, invit
 	return count > 0, nil
 }
 
-func (ic *InviteContainer) CreateInvite(ctx context.Context, fromUserID, toUserID string) (*Invite, error) {
-	if invited, err := ic.UserHasInvitedUser(ctx, fromUserID, toUserID); err != nil {
+func (ic *InviteContainer) CreateInvite(ctx context.Context, fromUserID, email string) (*Invite, error) {
+	userToInvite, err := ic.userContainer.GetUserByEmail(ctx, email)
+	if err != nil {
+		if err == ErrUserDoesNotExists {
+			return nil, ErrUserDoesNotExists
+		}
+
+		return nil, ErrInternalError
+	}
+
+	if invited, err := ic.UserHasInvitedUser(ctx, fromUserID, userToInvite.ID); err != nil {
 		return nil, err
 	} else if invited {
 		return nil, ErrInviteAlreadyExists
@@ -65,7 +76,7 @@ func (ic *InviteContainer) CreateInvite(ctx context.Context, fromUserID, toUserI
 	invite := Invite{
 		ID:         ulid.Make().String(),
 		FromUserID: fromUserID,
-		ToUserID:   toUserID,
+		ToUserID:   userToInvite.ID,
 		Status:     InviteStatusPending,
 		CreatedAt:  time.Now().Format(time.RFC3339),
 	}
