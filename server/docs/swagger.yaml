@@ -1,0 +1,34 @@
+basePath: /
+definitions:
+  handlers.HealthResponse:
+    properties:
+      database:
+        type: boolean
+    type: object
+host: localhost:1323
+info:
+  contact:
+    email: not@stneto.dev
+    name: API Support
+    url: https://stneto.dev
+  description: This is a generic app
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Banking API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.HealthResponse'
+      summary: Show health status
+      tags:
+      - system
+swagger: "2.0"

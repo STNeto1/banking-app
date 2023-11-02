@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/huandu/go-sqlbuilder"
@@ -9,7 +10,19 @@ import (
 )
 
 func CreateDB() *sqlx.DB {
-	return nil
+	db, err := sqlx.Connect("sqlite3", fmt.Sprintf("file:%s.db", "dev"))
+	if err != nil {
+		log.Fatalln("failed to connect", err)
+	}
+
+	// for _, schema := range getSchemas() {
+	// 	_, err := db.Exec(schema)
+	// 	if err != nil {
+	// 		log.Fatalln("failed to create table", err)
+	// 	}
+	// }
+
+	return db
 }
 
 func CreateTempDB() *sqlx.DB {
