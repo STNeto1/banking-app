@@ -1,5 +1,5 @@
 swag:
-	swag init -g main.go -d cmd/web,pkg/handlers
+	swag init -g main.go -d cmd/web,pkg/core,pkg/handlers
 	swag fmt
 
 migrate:

@@ -1,9 +1,36 @@
 basePath: /
 definitions:
+  core.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   handlers.HealthResponse:
     properties:
       database:
         type: boolean
+    type: object
+  handlers.createUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.loginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
     type: object
 host: localhost:1323
 info:
@@ -19,6 +46,44 @@ info:
   title: Banking API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      parameters:
+      - description: User credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.User'
+      summary: Authenticate user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      parameters:
+      - description: User credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/core.User'
+      summary: Create user
+      tags:
+      - auth
   /health:
     get:
       produces:

@@ -1,12 +1,12 @@
 package core
 
 type User struct {
-	ID        string  `db:"id"`
-	Name      string  `db:"name"`
-	Email     string  `db:"email"`
-	Password  string  `db:"password"`
-	CreatedAt string  `db:"created_at"`
-	DeletedAt *string `db:"deleted_at"`
+	ID        string  `db:"id" json:"id"`
+	Name      string  `db:"name" json:"name"`
+	Email     string  `db:"email" json:"email"`
+	Password  string  `db:"password" swaggerignore:"true" json:"-"`
+	CreatedAt string  `db:"created_at" swaggerignore:"true" json:"-"`
+	DeletedAt *string `db:"deleted_at" swaggerignore:"true" json:"-"`
 }
 
 type InviteStatus string
@@ -37,5 +37,3 @@ type inviteUserRow struct {
 	UserName  string `db:"user_name"`
 	UserEmail string `db:"user_email"`
 }
-
-//"invites.id", "invites.to_user_id", "invites.status", "invites.created_at", "users.name", "users.email").

@@ -31,6 +31,8 @@ func main() {
 	app := echo.New()
 
 	app.GET("/health", handlerContainer.HealthHandler)
+	app.POST("/auth/register", handlerContainer.CreateUserHandler)
+	app.POST("/auth/login", handlerContainer.LoginHandler)
 
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 
