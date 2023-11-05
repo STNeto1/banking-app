@@ -8,11 +8,13 @@ import (
 type Container struct {
 	connection    *sqlx.DB
 	authContainer *core.AuthContainer
+	userContainer *core.UserContainer
 }
 
 func CreateContainer(connection *sqlx.DB) *Container {
 	return &Container{
 		connection:    connection,
 		authContainer: core.NewAuthContainer(connection),
+		userContainer: core.NewUserContainer(connection),
 	}
 }

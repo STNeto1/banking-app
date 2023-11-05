@@ -21,8 +21,13 @@ import (
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host		localhost:1323
-// @BasePath	/
+//	@host		localhost:1323
+//	@BasePath	/
+
+// @securityDefinitions.apiKey	ApiKeyAuth
+// @in							header
+// @name						Authorization
+// @description				JWT token
 func main() {
 	conn := core.CreateDB()
 
@@ -31,8 +36,10 @@ func main() {
 	app := echo.New()
 
 	app.GET("/health", handlerContainer.HealthHandler)
+
 	app.POST("/auth/register", handlerContainer.CreateUserHandler)
 	app.POST("/auth/login", handlerContainer.LoginHandler)
+	app.GET("/auth/profile", handlerContainer.ProfileHandler)
 
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 

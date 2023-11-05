@@ -2,13 +2,21 @@ basePath: /
 definitions:
   core.User:
     properties:
-      createdAt:
-        type: string
       email:
         type: string
       id:
         type: string
       name:
+        type: string
+    type: object
+  handlers.AuthResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  handlers.GenericErrorResponse:
+    properties:
+      message:
         type: string
     type: object
   handlers.HealthResponse:
@@ -58,11 +66,45 @@ paths:
       produces:
       - application/json
       responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      summary: Authenticate user
+      tags:
+      - auth
+  /auth/profile:
+    get:
+      produces:
+      - application/json
+      responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/core.User'
-      summary: Authenticate user
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: User profile
       tags:
       - auth
   /auth/register:
@@ -80,7 +122,15 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/core.User'
+            $ref: '#/definitions/handlers.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
       summary: Create user
       tags:
       - auth
@@ -96,4 +146,10 @@ paths:
       summary: Show health status
       tags:
       - system
+securityDefinitions:
+  ApiKeyAuth:
+    description: JWT token
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
