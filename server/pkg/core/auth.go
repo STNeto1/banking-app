@@ -261,6 +261,7 @@ func (ac *AuthContainer) UseUserID(token string) (string, error) {
 }
 
 func (ac *AuthContainer) UseUser(ctx echo.Context) (*User, error) {
+	// dedupe user calls
 	usr, ok := ctx.Get("user").(*User)
 	if ok {
 		return usr, nil
@@ -286,5 +287,6 @@ func (ac *AuthContainer) UseUser(ctx echo.Context) (*User, error) {
 	}
 
 	ctx.Set("user", usr)
+	ctx.Set("userID", usr.ID)
 	return usr, nil
 }
