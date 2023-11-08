@@ -45,6 +45,8 @@ func main() {
 	app.POST("/auth/login", handlerContainer.LoginHandler)
 	app.GET("/auth/profile", handlerContainer.ProfileHandler, handlers.UserMiddleware(authContainer))
 
+	app.POST("/invites/create", handlerContainer.CreateInviteHandler, handlers.UserMiddleware(authContainer))
+
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	app.Logger.Fatal(app.Start(":1323"))

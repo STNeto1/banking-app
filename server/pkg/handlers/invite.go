@@ -1,0 +1,64 @@
+package handlers
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/stneto1/banking-server/pkg/core"
+)
+
+type createInviteRequest struct {
+	Email string `json:"email"`
+}
+
+// Create Invite godoc
+//
+//	@Summary	Create invite to a user
+//	@Tags		invite
+//	@Consumes	json
+//	@Produce	json
+//	@Param		body	body		createInviteRequest	true	"Invite params"
+//	@Success	201		{object}	GenericSuccessResponse
+//	@Failure	400		{object}	GenericErrorResponse
+//	@Failure	500		{object}	GenericErrorResponse
+//	@Router		/invites/create [post]
+//
+// @Security	ApiKeyAuth
+func (c *Container) CreateInviteHandler(ctx echo.Context) error {
+	req := new(createInviteRequest)
+	if err := ctx.Bind(req); err != nil {
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: "Invalid request",
+		})
+	}
+
+	usr, err := c.authContainer.UseUser(ctx)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	_, err = c.inviteContainer.CreateInvite(ctx.Request().Context(), usr.ID, req.Email)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusCreated, GenericSuccessResponse{
+		Message: "Invite created with success",
+	})
+}

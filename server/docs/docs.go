@@ -168,6 +168,53 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/invites/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "invite"
+                ],
+                "summary": "Create invite to a user",
+                "parameters": [
+                    {
+                        "description": "Invite params",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.createInviteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.GenericSuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.GenericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.GenericErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -201,11 +248,27 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.GenericSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.HealthResponse": {
             "type": "object",
             "properties": {
                 "database": {
                     "type": "boolean"
+                }
+            }
+        },
+        "handlers.createInviteRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
                 }
             }
         },

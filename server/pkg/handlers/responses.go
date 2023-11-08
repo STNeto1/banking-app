@@ -11,3 +11,7 @@ type AuthResponse struct {
 type GenericErrorResponse struct {
 	Message string `json:"message"`
 }
+
+type GenericSuccessResponse struct {
+	Message string `json:"message"`
+}
