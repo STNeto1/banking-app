@@ -125,14 +125,7 @@ func (c *Container) CreateUserHandler(ctx echo.Context) error {
 // @Router		/auth/profile [get]
 // @Security	ApiKeyAuth
 func (c *Container) ProfileHandler(ctx echo.Context) error {
-	userID, err := c.authContainer.UseUserID(ctx.Request().Header.Get("Authorization"))
-	if err != nil {
-		return ctx.JSON(http.StatusUnauthorized, GenericErrorResponse{
-			Message: "Unauthorized",
-		})
-	}
-
-	usr, err := c.userContainer.GetUserByID(ctx.Request().Context(), userID)
+	usr, err := c.authContainer.UseUser(ctx)
 	if err != nil {
 		if err == core.ErrInternalError {
 			log.Println("error getting user", err)

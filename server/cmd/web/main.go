@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/stneto1/banking-server/pkg/core"
 	"github.com/stneto1/banking-server/pkg/handlers"
 	"github.com/swaggo/echo-swagger"
@@ -31,15 +32,18 @@ import (
 func main() {
 	conn := core.CreateDB()
 
+	authContainer := core.NewAuthContainer(conn)
 	handlerContainer := handlers.CreateContainer(conn)
 
 	app := echo.New()
+
+	app.Use(middleware.Recover(), middleware.Logger())
 
 	app.GET("/health", handlerContainer.HealthHandler)
 
 	app.POST("/auth/register", handlerContainer.CreateUserHandler)
 	app.POST("/auth/login", handlerContainer.LoginHandler)
-	app.GET("/auth/profile", handlerContainer.ProfileHandler)
+	app.GET("/auth/profile", handlerContainer.ProfileHandler, handlers.UserMiddleware(authContainer))
 
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 

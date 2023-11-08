@@ -10,6 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -21,14 +22,16 @@ var (
 )
 
 type AuthContainer struct {
-	tokenSecret []byte
-	connection  *sqlx.DB
+	tokenSecret   []byte
+	connection    *sqlx.DB
+	userContainer *UserContainer
 }
 
 func NewAuthContainer(connection *sqlx.DB) *AuthContainer {
 	return &AuthContainer{
-		tokenSecret: []byte("secret"),
-		connection:  connection,
+		tokenSecret:   []byte("secret"),
+		connection:    connection,
+		userContainer: NewUserContainer(connection),
 	}
 }
 
@@ -246,7 +249,8 @@ func (ac *AuthContainer) UseUserID(token string) (string, error) {
 	})
 
 	if err != nil {
-		return "", err
+		log.Println("failed to parse token", err)
+		return "", ErrInternalError
 	}
 
 	if claims, ok := decodedToken.Claims.(jwt.MapClaims); ok && decodedToken.Valid {
@@ -254,4 +258,33 @@ func (ac *AuthContainer) UseUserID(token string) (string, error) {
 	}
 
 	return "", ErrInvalidCredentials
+}
+
+func (ac *AuthContainer) UseUser(ctx echo.Context) (*User, error) {
+	usr, ok := ctx.Get("user").(*User)
+	if ok {
+		return usr, nil
+	}
+
+	token := ctx.Request().Header.Get("Authorization")
+	if token == "" {
+		return nil, ErrInvalidCredentials
+	}
+
+	sub, err := ac.UseUserID(token)
+	if err != nil {
+		return nil, err
+	}
+
+	if sub == "" {
+		return nil, ErrInvalidCredentials
+	}
+
+	usr, err = ac.userContainer.GetUserByID(ctx.Request().Context(), sub)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.Set("user", usr)
+	return usr, nil
 }
