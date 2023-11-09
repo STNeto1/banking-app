@@ -148,6 +148,10 @@ func (ic *InviteContainer) GetUserSentInvites(ctx context.Context, userID string
 		})
 	}
 
+	if len(invites) == 0 {
+		invites = make([]Invite, 0)
+	}
+
 	return invites, nil
 }
 
@@ -160,7 +164,7 @@ func (ic *InviteContainer) GetUserReceivedInvites(ctx context.Context, userID st
 		"users.id as user_id",
 		"users.name as user_name",
 		"users.email as user_email").
-		Where(sb.Equal("invites.from_user_id", userID)).
+		Where(sb.Equal("invites.to_user_id", userID)).
 		JoinWithOption(sqlbuilder.LeftJoin, "users", "invites.from_user_id = users.id").
 		Build()
 
@@ -194,6 +198,10 @@ func (ic *InviteContainer) GetUserReceivedInvites(ctx context.Context, userID st
 			Status:    InviteStatus(row.Status),
 			CreatedAt: row.CreatedAt,
 		})
+	}
+
+	if len(invites) == 0 {
+		invites = make([]Invite, 0)
 	}
 
 	return invites, nil
