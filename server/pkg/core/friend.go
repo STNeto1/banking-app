@@ -27,7 +27,7 @@ func (fc *FriendContainer) GetFriends(ctx context.Context, userID string) ([]Use
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("friends")
 
 	_sql, args := sb.Select("users.*").Where(sb.Equal("friends.user_id", userID)).
-		JoinWithOption(sqlbuilder.LeftJoin, "users", "friends.friend_id= users.id").
+		JoinWithOption(sqlbuilder.LeftJoin, "users", "friends.friend_id = users.id").
 		Build()
 
 	rows, err := fc.connection.QueryxContext(ctx, _sql, args...)
@@ -49,6 +49,10 @@ func (fc *FriendContainer) GetFriends(ctx context.Context, userID string) ([]Use
 		}
 
 		users = append(users, row)
+	}
+
+	if len(users) == 0 {
+		users = make([]User, 0)
 	}
 
 	return users, nil
@@ -88,7 +92,12 @@ func (fc *FriendContainer) DeleteFriend(ctx context.Context, userID, friendID st
 
 	db := sqlbuilder.PostgreSQL.NewDeleteBuilder().DeleteFrom("friends")
 	_sql, args = db.
-		Where(db.Equal("user_id", userID), db.Equal("friend_id", friendID)).
+		Where(
+			db.Or(
+				db.And(db.Equal("user_id", userID), db.Equal("friend_id", friendID)),
+				db.And(db.Equal("user_id", friendID), db.Equal("friend_id", userID)),
+			),
+		).
 		Build()
 
 	_, err = tx.ExecContext(ctx, _sql, args...)

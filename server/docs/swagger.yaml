@@ -167,6 +167,56 @@ paths:
       summary: Create user
       tags:
       - auth
+  /friends/list:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/core.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List user friends
+      tags:
+      - friend
+  /friends/remove/{id}:
+    post:
+      parameters:
+      - description: Friend ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove friend
+      tags:
+      - friend
   /health:
     get:
       produces:

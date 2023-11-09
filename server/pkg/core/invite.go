@@ -313,6 +313,7 @@ func (ic *InviteContainer) AcceptInvite(ctx context.Context, userID, inviteID st
 	friendsIb := sqlbuilder.PostgreSQL.NewInsertBuilder().InsertInto("friends")
 	_sql, args = friendsIb.Cols("id", "user_id", "friend_id").
 		Values(ulid.Make().String(), invite.FromUserID, invite.ToUserID).
+		Values(ulid.Make().String(), invite.ToUserID, invite.FromUserID).
 		Build()
 
 	_, err = tx.ExecContext(ctx, _sql, args...)

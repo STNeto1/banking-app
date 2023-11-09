@@ -52,6 +52,9 @@ func main() {
 	app.POST("/invites/accept/:id", handlerContainer.AcceptInviteHandler, handlers.UserMiddleware(authContainer))
 	app.POST("/invites/reject/:id", handlerContainer.RejectInviteHandler, handlers.UserMiddleware(authContainer))
 
+	app.GET("/friends/list", handlerContainer.ListFriendsHandler, handlers.UserMiddleware(authContainer))
+	app.POST("/friends/remove/:id", handlerContainer.RemoveFriendHandler, handlers.UserMiddleware(authContainer))
+
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	app.Logger.Fatal(app.Start(":1323"))

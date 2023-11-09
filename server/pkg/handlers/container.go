@@ -10,6 +10,7 @@ type Container struct {
 	authContainer   *core.AuthContainer
 	userContainer   *core.UserContainer
 	inviteContainer *core.InviteContainer
+	friendContainer *core.FriendContainer
 }
 
 func CreateContainer(connection *sqlx.DB) *Container {
@@ -18,5 +19,6 @@ func CreateContainer(connection *sqlx.DB) *Container {
 		authContainer:   core.NewAuthContainer(connection),
 		userContainer:   core.NewUserContainer(connection),
 		inviteContainer: core.NewInviteContainer(connection),
+		friendContainer: core.NewFriendContainer(connection),
 	}
 }
