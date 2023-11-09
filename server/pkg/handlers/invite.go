@@ -23,7 +23,7 @@ type createInviteRequest struct {
 //	@Failure	500		{object}	GenericErrorResponse
 //	@Router		/invites/create [post]
 //
-// @Security	ApiKeyAuth
+//	@Security	ApiKeyAuth
 func (c *Container) CreateInviteHandler(ctx echo.Context) error {
 	req := new(createInviteRequest)
 	if err := ctx.Bind(req); err != nil {
@@ -61,4 +61,88 @@ func (c *Container) CreateInviteHandler(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, GenericSuccessResponse{
 		Message: "Invite created with success",
 	})
+}
+
+// List sent invites godoc
+//
+//	@Summary	List user sent invites
+//	@Tags		invite
+//	@Produce	json
+//	@Success	200	{object}	[]core.Invite
+//	@Failure	400	{object}	GenericErrorResponse
+//	@Failure	500	{object}	GenericErrorResponse
+//	@Router		/invites/sent [get]
+//
+//	@Security	ApiKeyAuth
+func (c *Container) ListSentInvitesHandler(ctx echo.Context) error {
+
+	usr, err := c.authContainer.UseUser(ctx)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	invites, err := c.inviteContainer.GetUserSentInvites(ctx.Request().Context(), usr.ID)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, invites)
+}
+
+// List received invites godoc
+//
+//	@Summary	List user received invites
+//	@Tags		invite
+//	@Produce	json
+//	@Success	200	{object}	[]core.Invite
+//	@Failure	400	{object}	GenericErrorResponse
+//	@Failure	500	{object}	GenericErrorResponse
+//	@Router		/invites/received [get]
+//
+//	@Security	ApiKeyAuth
+func (c *Container) ListReceivedInvitesHandler(ctx echo.Context) error {
+
+	usr, err := c.authContainer.UseUser(ctx)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	invites, err := c.inviteContainer.GetUserReceivedInvites(ctx.Request().Context(), usr.ID)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, invites)
 }

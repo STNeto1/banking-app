@@ -20,12 +20,12 @@ const (
 )
 
 type Invite struct {
-	ID         string       `db:"id"`
-	FromUserID string       `db:"from_user_id"`
-	ToUserID   string       `db:"to_user_id"`
-	Status     InviteStatus `db:"status"`
-	CreatedAt  string       `db:"created_at"`
-	User       *User        `db:"-"`
+	ID         string       `db:"id" json:"id"`
+	FromUserID string       `db:"from_user_id" json:"-"`
+	ToUserID   string       `db:"to_user_id" json:"-"`
+	Status     InviteStatus `db:"status" json:"status"`
+	CreatedAt  string       `db:"created_at" json:"created_at"`
+	User       *User        `db:"-" json:"user"`
 }
 
 // models for sql queries
