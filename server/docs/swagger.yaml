@@ -179,6 +179,32 @@ paths:
       summary: Show health status
       tags:
       - system
+  /invites/accept/{id}:
+    post:
+      parameters:
+      - description: Invite ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Accept an user received invite
+      tags:
+      - invite
   /invites/cancel/{id}:
     post:
       parameters:
@@ -256,6 +282,32 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: List user received invites
+      tags:
+      - invite
+  /invites/reject/{id}:
+    post:
+      parameters:
+      - description: Invite ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Reject an user received invite
       tags:
       - invite
   /invites/sent:

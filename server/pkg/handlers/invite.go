@@ -192,3 +192,95 @@ func (c *Container) CancelInviteHandler(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusNoContent, nil)
 }
+
+// Accept invite godoc
+//
+//	@Summary	Accept an user received invite
+//	@Tags		invite
+//	@Produce	json
+//
+//	@Param		id	path		string	true	"Invite ID"
+//
+//	@Success	204	{object}	nil
+//	@Failure	400	{object}	GenericErrorResponse
+//	@Failure	500	{object}	GenericErrorResponse
+//	@Router		/invites/accept/{id} [post]
+//
+//	@Security	ApiKeyAuth
+func (c *Container) AcceptInviteHandler(ctx echo.Context) error {
+
+	usr, err := c.authContainer.UseUser(ctx)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	inviteID := ctx.Param("id")
+
+	if err := c.inviteContainer.AcceptInvite(ctx.Request().Context(), usr.ID, inviteID); err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusNoContent, nil)
+}
+
+// Reject invite godoc
+//
+//	@Summary	Reject an user received invite
+//	@Tags		invite
+//	@Produce	json
+//
+//	@Param		id	path		string	true	"Invite ID"
+//
+//	@Success	204	{object}	nil
+//	@Failure	400	{object}	GenericErrorResponse
+//	@Failure	500	{object}	GenericErrorResponse
+//	@Router		/invites/reject/{id} [post]
+//
+//	@Security	ApiKeyAuth
+func (c *Container) RejectInviteHandler(ctx echo.Context) error {
+
+	usr, err := c.authContainer.UseUser(ctx)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	inviteID := ctx.Param("id")
+
+	if err := c.inviteContainer.RejectInvite(ctx.Request().Context(), usr.ID, inviteID); err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusNoContent, nil)
+}
