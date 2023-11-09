@@ -48,6 +48,7 @@ func main() {
 	app.POST("/invites/create", handlerContainer.CreateInviteHandler, handlers.UserMiddleware(authContainer))
 	app.GET("/invites/sent", handlerContainer.ListSentInvitesHandler, handlers.UserMiddleware(authContainer))
 	app.GET("/invites/received", handlerContainer.ListReceivedInvitesHandler, handlers.UserMiddleware(authContainer))
+	app.POST("/invites/cancel/:id", handlerContainer.CancelInviteHandler, handlers.UserMiddleware(authContainer))
 
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 

@@ -146,3 +146,49 @@ func (c *Container) ListReceivedInvitesHandler(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, invites)
 }
+
+// Cancel invite godoc
+//
+//	@Summary	Cancel an user sent invite
+//	@Tags		invite
+//	@Produce	json
+//
+//	@Param		id	path		string	true	"Invite ID"
+//
+//	@Success	204	{object}	nil
+//	@Failure	400	{object}	GenericErrorResponse
+//	@Failure	500	{object}	GenericErrorResponse
+//	@Router		/invites/cancel/{id} [post]
+//
+//	@Security	ApiKeyAuth
+func (c *Container) CancelInviteHandler(ctx echo.Context) error {
+
+	usr, err := c.authContainer.UseUser(ctx)
+	if err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	inviteID := ctx.Param("id")
+
+	if err := c.inviteContainer.CancelInvite(ctx.Request().Context(), usr.ID, inviteID); err != nil {
+		if err == core.ErrInternalError {
+			return ctx.JSON(http.StatusInternalServerError, GenericErrorResponse{
+				Message: "Internal error",
+			})
+		}
+
+		return ctx.JSON(http.StatusBadRequest, GenericErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusNoContent, nil)
+}
