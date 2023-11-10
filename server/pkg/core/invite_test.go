@@ -183,11 +183,15 @@ func TestAcceptInvite(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.NoError(t, err)
 
-	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user.Email)
+	user2, err := authContainer.CreateUser(context.Background(), "foo", "mail2@mail.com", "102030")
+	assert.NotNil(t, user2)
+	assert.NoError(t, err)
+
+	invite, err := inviteContainer.CreateInvite(context.Background(), user.ID, user2.Email)
 	assert.NotNil(t, invite)
 	assert.NoError(t, err)
 
-	err = inviteContainer.AcceptInvite(context.Background(), user.ID, invite.ID)
+	err = inviteContainer.AcceptInvite(context.Background(), user2.ID, invite.ID)
 	assert.NoError(t, err)
 }
 
