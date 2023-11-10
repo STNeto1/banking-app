@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/stneto1/banking-server/pkg/core"
 	"github.com/stneto1/banking-server/pkg/handlers"
-	"github.com/swaggo/echo-swagger"
+	echoSwagger "github.com/swaggo/echo-swagger"
 
 	_ "github.com/stneto1/banking-server/docs"
 )
@@ -54,6 +54,10 @@ func main() {
 
 	app.GET("/friends/list", handlerContainer.ListFriendsHandler, handlers.UserMiddleware(authContainer))
 	app.POST("/friends/remove/:id", handlerContainer.RemoveFriendHandler, handlers.UserMiddleware(authContainer))
+
+	app.GET("/events/list", handlerContainer.ListUserEventsHandler, handlers.UserMiddleware(authContainer))
+	app.POST("/events/deposit", handlerContainer.CreateDepositHandler, handlers.UserMiddleware(authContainer))
+	app.POST("/events/withdraw", handlerContainer.CreateWithdrawHandler, handlers.UserMiddleware(authContainer))
 
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 

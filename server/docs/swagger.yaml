@@ -1,5 +1,18 @@
 basePath: /
 definitions:
+  core.Event:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      type:
+        type: string
+    type: object
   core.Invite:
     properties:
       created_at:
@@ -25,6 +38,8 @@ definitions:
     - InviteStatusRejected
   core.User:
     properties:
+      balance:
+        type: number
       email:
         type: string
       id:
@@ -51,6 +66,11 @@ definitions:
     properties:
       database:
         type: boolean
+    type: object
+  handlers.createEventRequest:
+    properties:
+      amount:
+        type: number
     type: object
   handlers.createInviteRequest:
     properties:
@@ -167,6 +187,88 @@ paths:
       summary: Create user
       tags:
       - auth
+  /events/deposit:
+    post:
+      parameters:
+      - description: Event params
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createEventRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.GenericSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create deposit for the user
+      tags:
+      - event
+  /events/list:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/core.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List user events
+      tags:
+      - event
+  /events/withdraw:
+    post:
+      parameters:
+      - description: Event params
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createEventRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.GenericSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create withdraw for the user
+      tags:
+      - event
   /friends/list:
     get:
       produces:

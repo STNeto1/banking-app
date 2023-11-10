@@ -51,6 +51,10 @@ func (ec *EventContainer) ListUserEvents(ctx context.Context, userID string) ([]
 		events = append(events, &event)
 	}
 
+	if len(events) == 0 {
+		events = make([]*Event, 0)
+	}
+
 	return events, nil
 }
 
