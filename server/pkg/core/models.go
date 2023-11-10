@@ -1,5 +1,7 @@
 package core
 
+import "github.com/shopspring/decimal"
+
 type User struct {
 	ID        string  `db:"id" json:"id"`
 	Name      string  `db:"name" json:"name"`
@@ -7,6 +9,8 @@ type User struct {
 	Password  string  `db:"password" swaggerignore:"true" json:"-"`
 	CreatedAt string  `db:"created_at" swaggerignore:"true" json:"-"`
 	DeletedAt *string `db:"deleted_at" swaggerignore:"true" json:"-"`
+
+	Balance decimal.Decimal `db:"balance" json:"balance,omitempty"`
 }
 
 type InviteStatus string

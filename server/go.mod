@@ -10,6 +10,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/oklog/ulid/v2 v2.1.0
+	github.com/shopspring/decimal v1.2.0
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.2

@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN balance decimal(10,2) NOT NULL DEFAULT 0;

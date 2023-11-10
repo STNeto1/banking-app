@@ -38,5 +38,8 @@ func CreateTempDB() *sqlx.DB {
 		log.Fatalln("failed to run migrations", err)
 	}
 
+	// sqlite issue - https://stackoverflow.com/a/62994222
+	db.SetMaxOpenConns(1)
+
 	return db
 }
