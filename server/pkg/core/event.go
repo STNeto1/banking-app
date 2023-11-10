@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/huandu/go-sqlbuilder"
@@ -11,11 +12,9 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// create withdraw event
-// create deposit event
-// create transfer event
-
-// list user events
+var (
+	ErrInsufficientBalance = fmt.Errorf("User has insufficient funds")
+)
 
 type EventContainer struct {
 	connection    *sqlx.DB
@@ -41,8 +40,6 @@ func (ec *EventContainer) CreateDepositEvent(ctx context.Context, userID string,
 	ub := sqlbuilder.NewUpdateBuilder().Update("users")
 	_sql, args := ub.Set(ub.Add("balance", amount)).Where(ub.Equal("id", userID)).Build()
 
-	// log.Println("update", _sql, args)
-
 	_, err = tx.ExecContext(ctx, _sql, args...)
 	if err != nil {
 		rollbackx(tx)
@@ -56,7 +53,65 @@ func (ec *EventContainer) CreateDepositEvent(ctx context.Context, userID string,
 		Values(ulid.Make().String(), userID, "deposit", "WIP", amount).
 		Build()
 
-	// log.Println("insert", _sql, args)
+	_, err = tx.ExecContext(ctx, _sql, args...)
+	if err != nil {
+		rollbackx(tx)
+
+		log.Println("error creating event", err)
+		return ErrInternalError
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Println("failed to commit", err)
+
+		return ErrInternalError
+	}
+	return nil
+}
+
+func (ec *EventContainer) CreateWithdrawalEvent(ctx context.Context, userID string, amount decimal.Decimal) error {
+	tx, err := ec.connection.BeginTxx(ctx, &sql.TxOptions{
+		Isolation: sql.LevelSerializable,
+	})
+	if err != nil {
+		log.Println("failed to open transaction", err)
+		return ErrInternalError
+	}
+
+	sb := sqlbuilder.NewSelectBuilder().From("users")
+	_sql, args := sb.Select("balance").Where(sb.Equal("id", userID)).Build()
+
+	var userBalance decimal.Decimal
+	row := tx.QueryRowxContext(ctx, _sql, args...)
+	if err := row.Scan(&userBalance); err != nil {
+		rollbackx(tx)
+
+		log.Println("error fetching user balance", err)
+		return ErrInternalError
+
+	}
+
+	if userBalance.LessThan(amount) {
+		rollbackx(tx)
+
+		return ErrInsufficientBalance
+	}
+
+	ub := sqlbuilder.NewUpdateBuilder().Update("users")
+	_sql, args = ub.Set(ub.Sub("balance", amount)).Where(ub.Equal("id", userID)).Build()
+
+	_, err = tx.ExecContext(ctx, _sql, args...)
+	if err != nil {
+		rollbackx(tx)
+
+		log.Println("error updating balance", err)
+		return ErrInternalError
+	}
+
+	cb := sqlbuilder.NewInsertBuilder().InsertInto("events")
+	_sql, args = cb.Cols("id", "user_id", "type", "description", "amount").
+		Values(ulid.Make().String(), userID, "withdrawal", "WIP", amount).
+		Build()
 
 	_, err = tx.ExecContext(ctx, _sql, args...)
 	if err != nil {
