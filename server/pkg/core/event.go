@@ -30,7 +30,9 @@ func NewEventContainer(connection *sqlx.DB) *EventContainer {
 
 func (ec *EventContainer) ListUserEvents(ctx context.Context, userID string) ([]*Event, error) {
 	sb := sqlbuilder.NewSelectBuilder().From("events")
-	_sql, args := sb.Select("*").Where(sb.Equal("user_id", userID)).Build()
+	_sql, args := sb.Select("*").Where(sb.Equal("user_id", userID)).
+		OrderBy("events.created_at").Desc().
+		Build()
 
 	rows, err := ec.connection.QueryxContext(ctx, _sql, args...)
 	if err != nil {

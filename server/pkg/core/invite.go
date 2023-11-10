@@ -114,6 +114,7 @@ func (ic *InviteContainer) GetUserSentInvites(ctx context.Context, userID string
 		"users.email as user_email").
 		Where(sb.Equal("invites.from_user_id", userID)).
 		JoinWithOption(sqlbuilder.LeftJoin, "users", "invites.to_user_id = users.id").
+		OrderBy("invites.created_at").Desc().
 		Build()
 
 	rows, err := ic.connection.QueryxContext(ctx, _sql, args...)
@@ -166,6 +167,7 @@ func (ic *InviteContainer) GetUserReceivedInvites(ctx context.Context, userID st
 		"users.email as user_email").
 		Where(sb.Equal("invites.to_user_id", userID)).
 		JoinWithOption(sqlbuilder.LeftJoin, "users", "invites.from_user_id = users.id").
+		OrderBy("invites.created_at").Desc().
 		Build()
 
 	rows, err := ic.connection.QueryxContext(ctx, _sql, args...)
