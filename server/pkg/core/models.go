@@ -32,6 +32,15 @@ type Invite struct {
 	User       *User        `db:"-" json:"user"`
 }
 
+type Event struct {
+	ID          string          `db:"id" json:"id"`
+	UserID      string          `db:"user_id" json:"-"`
+	Type        string          `db:"type" json:"type"`
+	Description string          `db:"description" json:"description"`
+	Amount      decimal.Decimal `db:"amount" json:"amount"`
+	CreatedAt   string          `db:"created_at" json:"created_at"`
+}
+
 // models for sql queries
 type inviteUserRow struct {
 	InviteID  string `db:"invite_id"`

@@ -266,3 +266,36 @@ func TestMakeMultipleTransferences(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, updatedUser.Balance.Equal(decimal.NewFromInt(10)))
 }
+
+func TestListUserEvents(t *testing.T) {
+	db := core.CreateTempDB()
+	defer db.Close()
+
+	authContainer := core.NewAuthContainer(db)
+	eventContainer := core.NewEventContainer(db)
+
+	fromUsr, err := authContainer.CreateUser(context.Background(), "foo", "mail@mail.com", "102030")
+	assert.NotNil(t, fromUsr)
+	assert.NoError(t, err)
+
+	toUsr, err := authContainer.CreateUser(context.Background(), "foo", "mail2@mail.com", "102030")
+	assert.NotNil(t, toUsr)
+	assert.NoError(t, err)
+
+	err = eventContainer.CreateDepositEvent(context.Background(), fromUsr.ID, decimal.NewFromInt(20))
+	assert.NoError(t, err)
+
+	err = eventContainer.CreateWithdrawalEvent(context.Background(), fromUsr.ID, decimal.NewFromInt(10))
+	assert.NoError(t, err)
+
+	err = eventContainer.CreateDepositEvent(context.Background(), toUsr.ID, decimal.NewFromInt(10))
+	assert.NoError(t, err)
+
+	err = eventContainer.CreateTransferEvent(context.Background(), fromUsr.ID, toUsr.ID, decimal.NewFromInt(5))
+	assert.NoError(t, err)
+
+	events, err := eventContainer.ListUserEvents(context.Background(), fromUsr.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, len(events), 3)
+
+}

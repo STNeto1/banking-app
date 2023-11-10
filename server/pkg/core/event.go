@@ -28,6 +28,32 @@ func NewEventContainer(connection *sqlx.DB) *EventContainer {
 	}
 }
 
+func (ec *EventContainer) ListUserEvents(ctx context.Context, userID string) ([]*Event, error) {
+	sb := sqlbuilder.NewSelectBuilder().From("events")
+	_sql, args := sb.Select("*").Where(sb.Equal("user_id", userID)).Build()
+
+	rows, err := ec.connection.QueryxContext(ctx, _sql, args...)
+	if err != nil {
+		log.Println("failed to query", err)
+		return nil, ErrInternalError
+	}
+
+	defer rows.Close()
+
+	var events []*Event
+	for rows.Next() {
+		var event Event
+		if err := rows.StructScan(&event); err != nil {
+			log.Println("failed to scan", err)
+			return nil, ErrInternalError
+		}
+
+		events = append(events, &event)
+	}
+
+	return events, nil
+}
+
 func (ec *EventContainer) CreateDepositEvent(ctx context.Context, userID string, amount decimal.Decimal) error {
 	tx, err := ec.connection.BeginTxx(ctx, &sql.TxOptions{
 		Isolation: sql.LevelSerializable,
