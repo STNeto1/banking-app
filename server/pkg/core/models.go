@@ -35,7 +35,7 @@ type Invite struct {
 type Event struct {
 	ID          string          `db:"id" json:"id"`
 	UserID      string          `db:"user_id" json:"-"`
-	Type        string          `db:"type" json:"type"`
+	Type        string          `db:"type" json:"type" enums:"deposit,withdrawal,transference_from,transference_to"`
 	Description string          `db:"description" json:"description"`
 	Amount      decimal.Decimal `db:"amount" json:"amount"`
 	CreatedAt   string          `db:"created_at" json:"created_at"`

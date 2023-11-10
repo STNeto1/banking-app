@@ -699,7 +699,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "deposit",
+                        "withdrawal",
+                        "transference_from",
+                        "transference_to"
+                    ]
                 }
             }
         },

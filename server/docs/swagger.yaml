@@ -11,6 +11,11 @@ definitions:
       id:
         type: string
       type:
+        enum:
+        - deposit
+        - withdrawal
+        - transference_from
+        - transference_to
         type: string
     type: object
   core.Invite:
