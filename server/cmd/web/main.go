@@ -58,6 +58,7 @@ func main() {
 	app.GET("/events/list", handlerContainer.ListUserEventsHandler, handlers.UserMiddleware(authContainer))
 	app.POST("/events/deposit", handlerContainer.CreateDepositHandler, handlers.UserMiddleware(authContainer))
 	app.POST("/events/withdraw", handlerContainer.CreateWithdrawHandler, handlers.UserMiddleware(authContainer))
+	app.POST("/events/transfer", handlerContainer.CreateTransferHandler, handlers.UserMiddleware(authContainer))
 
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 

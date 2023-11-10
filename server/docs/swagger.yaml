@@ -77,6 +77,13 @@ definitions:
       email:
         type: string
     type: object
+  handlers.createTransferEventRequest:
+    properties:
+      amount:
+        type: number
+      to:
+        type: string
+    type: object
   handlers.createUserRequest:
     properties:
       email:
@@ -238,6 +245,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: List user events
+      tags:
+      - event
+  /events/transfer:
+    post:
+      parameters:
+      - description: Event params
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createTransferEventRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.GenericSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.GenericErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create transfer for the user
       tags:
       - event
   /events/withdraw:
