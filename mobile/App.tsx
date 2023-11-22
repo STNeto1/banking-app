@@ -1,6 +1,6 @@
 import { useFonts } from "expo-font";
 import { TamaguiProvider } from "tamagui";
-import { HomeScreen } from "./screens/Home";
+import { OpeningScreen } from "./screens/Opening";
 import config from "./tamagui.config";
 
 export default function App() {
@@ -15,7 +15,7 @@ export default function App() {
 
   return (
     <TamaguiProvider config={config}>
-      <HomeScreen />
+      <OpeningScreen />
     </TamaguiProvider>
   );
 }

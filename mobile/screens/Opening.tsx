@@ -9,7 +9,7 @@ import { FadeInOut } from "../components/transitions";
 type TSteps = 1 | 2 | 3;
 type TScreenState = "opening" | "steps";
 
-export const HomeScreen = () => {
+export const OpeningScreen = () => {
   const [screenState, setScreenState] = useState<TScreenState>("opening");
   const [currentStep, setCurrentStep] = useState<TSteps>(1);
 
