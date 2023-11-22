@@ -2,6 +2,7 @@ import { useFonts } from "expo-font";
 import { TamaguiProvider } from "tamagui";
 import { OpeningScreen } from "./screens/Opening";
 import config from "./tamagui.config";
+import { AuthScreen } from "./screens/Auth";
 
 export default function App() {
   const [loaded] = useFonts({
@@ -15,7 +16,7 @@ export default function App() {
 
   return (
     <TamaguiProvider config={config}>
-      <OpeningScreen />
+      <AuthScreen />
     </TamaguiProvider>
   );
 }
