@@ -1,5 +1,6 @@
-import { H2, TamaguiProvider, Text, XStack, YStack } from "tamagui";
 import { useFonts } from "expo-font";
+import { TamaguiProvider } from "tamagui";
+import { HomeScreen } from "./screens/Home";
 import config from "./tamagui.config";
 
 export default function App() {
@@ -14,15 +15,7 @@ export default function App() {
 
   return (
     <TamaguiProvider config={config}>
-      <XStack
-        fullscreen
-        backgroundColor="$background"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <H2>Hello</H2>
-      </XStack>
+      <HomeScreen />
     </TamaguiProvider>
   );
 }
