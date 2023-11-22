@@ -4,18 +4,11 @@
 
 // for react-native only: @tamagui/config/v2-native
 
-import { createAnimations } from "@tamagui/animations-css";
 import { config } from "@tamagui/config/v2";
 
 import { createTamagui } from "tamagui";
-const tamaguiConfig = createTamagui({
-	...config,
-	animations: createAnimations({
-		fast: "ease-in 150ms",
-		medium: "ease-in 300ms",
-		slow: "ease-in 450ms",
-	}),
-});
+const tamaguiConfig = createTamagui(config);
+
 // this makes typescript properly type everything based on the config
 
 type Conf = typeof tamaguiConfig;
