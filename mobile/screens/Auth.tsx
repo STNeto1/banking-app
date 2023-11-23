@@ -90,6 +90,7 @@ export const LoginScreen: FC = () => {
               id="email"
               placeholder="john.doe@mail.com"
               width={"100%"}
+              autoComplete="email"
               backgroundColor={"$backgroundHover"}
               clearButtonMode="unless-editing"
             />
@@ -137,6 +138,120 @@ export const LoginScreen: FC = () => {
             </Text>
             <Text color={"$blue10"} fontSize={14} fontWeight={"400"}>
               Sign up here
+            </Text>
+          </XStack>
+        </YStack>
+      </Form>
+    </YStack>
+  );
+};
+
+export const RegisterScreen: FC = () => {
+  return (
+    <YStack
+      fullscreen
+      backgroundColor="$background"
+      paddingBottom={"$10"}
+      paddingHorizontal={"$4"}
+      justifyContent="center"
+    >
+      <YStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
+        <Button
+          size={"$3"}
+          variant="outlined"
+          pressStyle={{
+            backgroundColor: "$backgroundPress",
+          }}
+          icon={<ChevronLeft size={24} />}
+        />
+
+        <YStack
+          flex={0.5}
+          gap={"$4"}
+          alignItems="flex-start"
+          justifyContent="flex-end"
+        >
+          <Text color={"$blue10"} fontSize={30} fontWeight={"700"}>
+            Create Account
+          </Text>
+          <Text color={"#001533"} fontSize={15} fontWeight={"300"}>
+            Open a BankMe account with a few details.
+          </Text>
+        </YStack>
+      </YStack>
+
+      <Form
+        flex={1.7}
+        justifyContent="center"
+        onSubmit={() => console.log("submitting")}
+      >
+        <YStack minWidth={300} space="$2" flex={1} justifyContent="center">
+          <YStack alignItems="flex-start">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              placeholder="John Doe"
+              width={"100%"}
+              backgroundColor={"$backgroundHover"}
+              autoComplete="name"
+              clearButtonMode="unless-editing"
+            />
+          </YStack>
+
+          <YStack alignItems="flex-start">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              placeholder="john.doe@mail.com"
+              width={"100%"}
+              autoComplete="email"
+              backgroundColor={"$backgroundHover"}
+              clearButtonMode="unless-editing"
+            />
+          </YStack>
+
+          <YStack alignItems="flex-start">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              textContentType="password"
+              secureTextEntry
+              autoComplete="password"
+              placeholder="JohnDoe123"
+              width={"100%"}
+              backgroundColor={"$backgroundHover"}
+              clearButtonMode="unless-editing"
+            />
+          </YStack>
+
+          <YStack alignItems="flex-start">
+            <Label htmlFor="confirm_password">Confirm Password</Label>
+            <Input
+              id="confirm_password"
+              textContentType="password"
+              secureTextEntry
+              autoComplete="password"
+              placeholder="JohnDoe123"
+              width={"100%"}
+              backgroundColor={"$backgroundHover"}
+              clearButtonMode="unless-editing"
+            />
+          </YStack>
+        </YStack>
+
+        <YStack alignItems="flex-start" justifyContent="center" gap="$4">
+          <Form.Trigger asChild>
+            <Button width={"100%"} backgroundColor={"$blue10"} color={"white"}>
+              Create your account
+            </Button>
+          </Form.Trigger>
+
+          <XStack width={"100%"} gap={"$2"} justifyContent={"center"}>
+            <Text fontSize={14} fontWeight={"400"}>
+              Do you already have a [[Placeholder]] account?
+            </Text>
+            <Text color={"$blue10"} fontSize={14} fontWeight={"400"}>
+              Sign in here
             </Text>
           </XStack>
         </YStack>
