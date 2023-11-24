@@ -1,14 +1,16 @@
+import { PiggyBank } from "lucide-react-native";
+import { Button, HStack, Heading, Image, Text, VStack } from "native-base";
 import { FC, useEffect, useMemo, useState } from "react";
 import personal from "../../assets/images/personal.png";
 import piggy from "../../assets/images/piggy.png";
 import transfer from "../../assets/images/transfer.png";
 import { FadeInOut } from "../components/transitions";
-import { Text } from "native-base";
+import { OpeningProps } from "../routes";
 
 type TSteps = 1 | 2 | 3;
 type TScreenState = "opening" | "steps";
 
-export const OpeningScreen = () => {
+export const OpeningScreen = ({ navigation }: OpeningProps) => {
   const [screenState, setScreenState] = useState<TScreenState>("opening");
   const [currentStep, setCurrentStep] = useState<TSteps>(1);
 
@@ -33,11 +35,11 @@ export const OpeningScreen = () => {
   }
 
   return (
-    <YStack
-      fullscreen
+    <VStack
       backgroundColor="$background"
-      paddingBottom={"$10"}
-      paddingHorizontal={"$4"}
+      paddingBottom={36}
+      paddingX={4}
+      flex={1}
     >
       {currentStep === 1 && (
         <FadeInOut>
@@ -55,19 +57,20 @@ export const OpeningScreen = () => {
         </FadeInOut>
       )}
 
-      <XStack alignItems="center" justifyContent="space-between">
+      <HStack alignItems="center" justifyContent="space-between">
         <Steps step={currentStep} />
 
         <Button
-          backgroundColor={"$blue10"}
+          backgroundColor={"blue.500"}
           color={"white"}
-          width={"$12"}
-          pressStyle={{
-            backgroundColor: "$blue12",
+          width={"2/6"}
+          _pressed={{
+            backgroundColor: "blue.600",
           }}
           onPress={() => {
             if (currentStep === 3) {
-              setCurrentStep(1);
+              // setCurrentStep(1);
+              navigation.push("Auth");
               return;
             }
 
@@ -76,22 +79,22 @@ export const OpeningScreen = () => {
         >
           Next
         </Button>
-      </XStack>
-    </YStack>
+      </HStack>
+    </VStack>
   );
 };
 
 const Title: FC<{ title: string }> = ({ title }) => {
   return (
-    <H2 color={"#001533"} fontSize={30} fontWeight={"700"}>
+    <Heading size={"lg"} color={"#001533"} fontSize={30} fontWeight={"700"}>
       {title}
-    </H2>
+    </Heading>
   );
 };
 
 const Subtitle: FC<{ message: string }> = ({ message }) => {
   return (
-    <Text color={"#001533"} fontSize={17} fontWeight={"300"} lineHeight={"$4"}>
+    <Text color={"#001533"} fontSize={17} fontWeight={"300"} lineHeight={"md"}>
       {message}
     </Text>
   );
@@ -102,86 +105,91 @@ const Steps: FC<{ step: 1 | 2 | 3 }> = ({ step }) => {
     return Array.from({ length: 3 }, (_, v) => {
       if (v + 1 === step) {
         return (
-          <XStack
+          <HStack
             key={`step-${v + 1}`}
-            backgroundColor={"$blue10"}
-            width={30}
-            height={10}
+            backgroundColor={"blue.500"}
+            width={10}
+            height={4}
             borderRadius={99}
           />
         );
       }
 
       return (
-        <XStack
+        <HStack
           key={`step-${v + 1}`}
-          backgroundColor={"$blue4"}
-          width={10}
-          height={10}
+          backgroundColor={"blue.300"}
+          width={4}
+          height={4}
           borderRadius={99}
         />
       );
     });
   }, [step]);
 
-  return <XStack gap={4}>{items}</XStack>;
+  return <HStack space={2}>{items}</HStack>;
 };
 
 const Entry: FC = () => {
   return (
-    <XStack
-      fullscreen
-      backgroundColor="$background"
+    <HStack
+      backgroundColor="white"
+      flex={1}
       display="flex"
       alignItems="center"
       justifyContent="center"
     >
-      <YStack alignItems="center">
-        <PiggyBank size={64} />
-        <H2>Bank Placeholder</H2>
-      </YStack>
-    </XStack>
+      <VStack alignItems="center">
+        <PiggyBank color="black" size={150} />
+        <Heading size={"lg"}>Bank [[Placeholder]]</Heading>
+      </VStack>
+    </HStack>
   );
 };
 
 const FirstStep: FC = () => {
   return (
-    <YStack alignItems="center" justifyContent="center" flex={1} gap={"$8"}>
-      <Image source={piggy} width={300} height={300} />
+    <VStack alignItems="center" justifyContent="center" flex={1} space={"10"}>
+      <Image source={piggy} width={300} height={300} alt="piggy bank" />
 
-      <YStack gap={2}>
+      <VStack space={2}>
         <Title title="Save Money" />
         <Subtitle
           message="We help you meet your savings target monthly and our emergency plans
             enable you save for multiple purposes"
         />
-      </YStack>
-    </YStack>
+      </VStack>
+    </VStack>
   );
 };
 
 const SecondStep: FC = () => {
   return (
-    <YStack alignItems="center" justifyContent="center" flex={1} gap={"$8"}>
-      <Image source={transfer} width={300} height={300} />
+    <VStack alignItems="center" justifyContent="center" flex={1} space={"10"}>
+      <Image
+        source={transfer}
+        width={300}
+        height={300}
+        alt="transfering money"
+      />
 
-      <YStack gap={2}>
+      <VStack space={2}>
         <Title title="Withdraw your money" />
         <Subtitle message="With just your phone number, you can withdraw your funds at any point in time from any BankMe agent close to you." />
-      </YStack>
-    </YStack>
+      </VStack>
+    </VStack>
   );
 };
 
 const ThirdStep: FC = () => {
   return (
-    <YStack alignItems="center" justifyContent="center" flex={1} gap={"$8"}>
-      <Image source={personal} width={300} height={300} />
+    <VStack alignItems="center" justifyContent="center" flex={1} space={"10"}>
+      <Image source={personal} width={300} height={300} alt="person" />
 
-      <YStack gap={2}>
+      <VStack space={2}>
         <Title title="Invest your money" />
         <Subtitle message="Get access to risk free investments that will multiply your income and pay high returns in few months" />
-      </YStack>
-    </YStack>
+      </VStack>
+    </VStack>
   );
 };

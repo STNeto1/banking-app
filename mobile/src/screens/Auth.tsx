@@ -1,260 +1,246 @@
-import { ChevronLeft } from '@tamagui/lucide-icons'
-import { Button, Form, Input, Label, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  VStack,
+  HStack,
+  Text,
+  Input,
+  FormControl,
+  ChevronLeftIcon,
+} from "native-base";
+import { AuthProps, LoginProps, RegisterProps } from "../routes";
 
-export const AuthScreen = () => {
+export const AuthScreen = ({ navigation }: AuthProps) => {
   return (
-    <YStack
-      fullscreen
-      backgroundColor="$background"
-      paddingBottom={'$10'}
-      paddingHorizontal={'$4'}
+    <VStack
+      flex={1}
+      paddingBottom={"10"}
+      paddingX={"4"}
       justifyContent="center"
     >
-      <YStack flex={1} alignItems="flex-start" justifyContent="center">
-        <Text color={'#001533'} fontSize={30} fontWeight={'700'}>
+      <VStack flex={1} alignItems="flex-start" justifyContent="center">
+        <Text color={"#001533"} fontSize={30} fontWeight={"700"}>
           Welcome to [[Placeholder]]
         </Text>
-        <Text color={'#001533'} fontSize={17} fontWeight={'300'}>
+        <Text color={"#001533"} fontSize={17} fontWeight={"300"}>
           The bank for everyone
         </Text>
-      </YStack>
+      </VStack>
 
-      <YStack width={'100%'} gap={'$4'}>
+      <VStack width={"100%"} space={4}>
         <Button
-          backgroundColor={'$blue10'}
-          pressStyle={{
-            backgroundColor: '$blue11'
+          backgroundColor={"blue.500"}
+          _pressed={{
+            backgroundColor: "blue.800",
           }}
-          color={'white'}
+          onPress={() => navigation.push("Register")}
         >
           Create your free account
         </Button>
         <Button
-          backgroundColor={'white'}
-          pressStyle={{
-            backgroundColor: '$backgroundPress'
+          variant={"unstyled"}
+          borderWidth={1}
+          borderColor={"blue.300"}
+          _pressed={{
+            backgroundColor: "gray.200",
           }}
-          borderColor={'$blue5'}
+          onPress={() => navigation.push("Login")}
         >
           Log into your account
         </Button>
-      </YStack>
-    </YStack>
-  )
-}
+      </VStack>
+    </VStack>
+  );
+};
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ navigation }: LoginProps) => {
   return (
-    <YStack
-      fullscreen
-      backgroundColor="$background"
-      paddingBottom={'$10'}
-      paddingHorizontal={'$4'}
+    <VStack
+      flex={1}
+      paddingBottom={"10"}
+      paddingX={"4"}
       justifyContent="center"
     >
-      <YStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
+      <VStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
         <Button
-          size={'$3'}
+          size={"md"}
           variant="outlined"
-          pressStyle={{
-            backgroundColor: '$backgroundPress'
-          }}
-          icon={<ChevronLeft size={24} />}
+          leftIcon={<ChevronLeftIcon />}
+          onPress={() => navigation.goBack()}
         />
 
-        <YStack
+        <VStack
           flex={0.5}
-          gap={'$4'}
+          space={"4"}
           alignItems="flex-start"
           justifyContent="flex-end"
         >
-          <Text color={'$blue10'} fontSize={30} fontWeight={'700'}>
+          <Text color={"blue.700"} fontSize={30} fontWeight={"700"}>
             Sign into your Account
           </Text>
-          <Text color={'#001533'} fontSize={15} fontWeight={'300'}>
+          <Text color={"#001533"} fontSize={15} fontWeight={"300"}>
             Log into your BankMe account
           </Text>
-        </YStack>
-      </YStack>
+        </VStack>
+      </VStack>
 
-      <Form
-        flex={1.7}
-        justifyContent="center"
-        onSubmit={() => console.log('submitting')}
-      >
-        <YStack minWidth={300} space="$2" flex={1} justifyContent="center">
-          <YStack alignItems="flex-start">
-            <Label htmlFor="email">Email</Label>
+      <FormControl flex={1.7} justifyContent="center">
+        <VStack minWidth={300} space="2" flex={1} justifyContent="center">
+          <VStack alignItems="flex-start">
+            <FormControl.Label htmlFor="email">Email</FormControl.Label>
             <Input
               id="email"
               placeholder="john.doe@mail.com"
-              width={'100%'}
+              width={"100%"}
               autoComplete="email"
-              backgroundColor={'$backgroundHover'}
               clearButtonMode="unless-editing"
             />
-          </YStack>
+          </VStack>
 
-          <YStack alignItems="flex-start">
-            <Label htmlFor="password">Password</Label>
+          <VStack alignItems="flex-start">
+            <FormControl.Label htmlFor="password">Password</FormControl.Label>
             <Input
               id="password"
               textContentType="password"
               secureTextEntry
               autoComplete="password"
               placeholder="JohnDoe123"
-              width={'100%'}
-              backgroundColor={'$backgroundHover'}
+              width={"100%"}
               clearButtonMode="unless-editing"
             />
-          </YStack>
+          </VStack>
+        </VStack>
 
-          <YStack
-            paddingTop={'$4'}
-            alignItems="flex-start"
-            justifyContent="center"
-            gap={'$2'}
-          >
-            <Text color={'$blue12Light'} fontSize={15} fontWeight={'300'}>
-              Have you forgotten your password?
-            </Text>
-            <Text color={'$blue11'} fontSize={15} fontWeight={'400'}>
-              Click here to reset your password
-            </Text>
-          </YStack>
-        </YStack>
+        <VStack alignItems="flex-start" justifyContent="center" space="4">
+          <Button width={"100%"} backgroundColor={"blue.600"} color={"white"}>
+            Sign in
+          </Button>
 
-        <YStack alignItems="flex-start" justifyContent="center" gap="$4">
-          <Form.Trigger asChild>
-            <Button width={'100%'} backgroundColor={'$blue10'} color={'white'}>
-              Sign in
-            </Button>
-          </Form.Trigger>
-
-          <XStack width={'100%'} gap={'$2'} justifyContent={'center'}>
-            <Text fontSize={14} fontWeight={'400'}>
+          <HStack width={"100%"} space={"2"} justifyContent={"center"}>
+            <Text fontSize={14} fontWeight={"400"}>
               Do you not have a [[Placeholder]] account?
             </Text>
-            <Text color={'$blue10'} fontSize={14} fontWeight={'400'}>
+            <Text
+              color={"blue.600"}
+              fontSize={14}
+              fontWeight={"400"}
+              onPress={() => navigation.push("Register")}
+            >
               Sign up here
             </Text>
-          </XStack>
-        </YStack>
-      </Form>
-    </YStack>
-  )
-}
+          </HStack>
+        </VStack>
+      </FormControl>
+    </VStack>
+  );
+};
 
-export const RegisterScreen = () => {
+export const RegisterScreen = ({ navigation }: RegisterProps) => {
   return (
-    <YStack
-      fullscreen
-      backgroundColor="$background"
-      paddingBottom={'$10'}
-      paddingHorizontal={'$4'}
+    <VStack
+      flex={1}
+      backgroundColor="gray.100"
+      paddingBottom={"10"}
+      paddingX={"4"}
       justifyContent="center"
     >
-      <YStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
+      <VStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
         <Button
-          size={'$3'}
+          size={"md"}
           variant="outlined"
-          pressStyle={{
-            backgroundColor: '$backgroundPress'
-          }}
-          icon={<ChevronLeft size={24} />}
+          leftIcon={<ChevronLeftIcon />}
+          onPress={() => navigation.goBack()}
         />
 
-        <YStack
+        <VStack
           flex={0.5}
-          gap={'$4'}
+          space={"4"}
           alignItems="flex-start"
           justifyContent="flex-end"
         >
-          <Text color={'$blue10'} fontSize={30} fontWeight={'700'}>
+          <Text color={"blue.700"} fontSize={30} fontWeight={"700"}>
             Create Account
           </Text>
-          <Text color={'#001533'} fontSize={15} fontWeight={'300'}>
+          <Text color={"#001533"} fontSize={15} fontWeight={"300"}>
             Open a BankMe account with a few details.
           </Text>
-        </YStack>
-      </YStack>
+        </VStack>
+      </VStack>
 
-      <Form
-        flex={1.7}
-        justifyContent="center"
-        onSubmit={() => console.log('submitting')}
-      >
-        <YStack minWidth={300} space="$2" flex={1} justifyContent="center">
-          <YStack alignItems="flex-start">
-            <Label htmlFor="name">Name</Label>
+      <FormControl flex={1.7} justifyContent="center">
+        <VStack minWidth={300} space="3" flex={1} justifyContent="center">
+          <VStack alignItems="flex-start">
+            <FormControl.Label htmlFor="name">Name</FormControl.Label>
             <Input
               id="name"
               placeholder="John Doe"
-              width={'100%'}
-              backgroundColor={'$backgroundHover'}
+              width={"100%"}
               autoComplete="name"
               clearButtonMode="unless-editing"
             />
-          </YStack>
+          </VStack>
 
-          <YStack alignItems="flex-start">
-            <Label htmlFor="email">Email</Label>
+          <VStack alignItems="flex-start">
+            <FormControl.Label htmlFor="email">Email</FormControl.Label>
             <Input
               id="email"
               placeholder="john.doe@mail.com"
-              width={'100%'}
+              width={"100%"}
               autoComplete="email"
-              backgroundColor={'$backgroundHover'}
+              backgroundColor={"$backgroundHover"}
               clearButtonMode="unless-editing"
             />
-          </YStack>
+          </VStack>
 
-          <YStack alignItems="flex-start">
-            <Label htmlFor="password">Password</Label>
+          <VStack alignItems="flex-start">
+            <FormControl.Label htmlFor="password">Password</FormControl.Label>
             <Input
               id="password"
               textContentType="password"
               secureTextEntry
               autoComplete="password"
               placeholder="JohnDoe123"
-              width={'100%'}
-              backgroundColor={'$backgroundHover'}
+              width={"100%"}
+              backgroundColor={"$backgroundHover"}
               clearButtonMode="unless-editing"
             />
-          </YStack>
+          </VStack>
 
-          <YStack alignItems="flex-start">
-            <Label htmlFor="confirm_password">Confirm Password</Label>
+          <VStack alignItems="flex-start">
+            <FormControl.Label htmlFor="confirm_password">
+              Confirm Password
+            </FormControl.Label>
             <Input
               id="confirm_password"
               textContentType="password"
               secureTextEntry
               autoComplete="password"
               placeholder="JohnDoe123"
-              width={'100%'}
-              backgroundColor={'$backgroundHover'}
+              width={"100%"}
               clearButtonMode="unless-editing"
             />
-          </YStack>
-        </YStack>
+          </VStack>
+        </VStack>
 
-        <YStack alignItems="flex-start" justifyContent="center" gap="$4">
-          <Form.Trigger asChild>
-            <Button width={'100%'} backgroundColor={'$blue10'} color={'white'}>
-              Create your account
-            </Button>
-          </Form.Trigger>
+        <VStack alignItems="flex-start" justifyContent="center" space="4">
+          <Button width={"100%"} backgroundColor={"blue.500"} color={"white"}>
+            Create your account
+          </Button>
 
-          <XStack width={'100%'} gap={'$2'} justifyContent={'center'}>
-            <Text fontSize={14} fontWeight={'400'}>
+          <HStack width={"100%"} space={"2"} justifyContent={"center"}>
+            <Text fontSize={14} fontWeight={"400"}>
               Do you already have a [[Placeholder]] account?
             </Text>
-            <Text color={'$blue10'} fontSize={14} fontWeight={'400'}>
+            <Text
+              color={"blue.800"}
+              fontSize={14}
+              fontWeight={"400"}
+              onPress={() => navigation.push("Login")}
+            >
               Sign in here
             </Text>
-          </XStack>
-        </YStack>
-      </Form>
-    </YStack>
-  )
-}
+          </HStack>
+        </VStack>
+      </FormControl>
+    </VStack>
+  );
+};
