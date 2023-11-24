@@ -35,12 +35,7 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
   }
 
   return (
-    <VStack
-      backgroundColor="$background"
-      paddingBottom={36}
-      paddingX={4}
-      flex={1}
-    >
+    <VStack paddingBottom={36} paddingX={4} flex={1}>
       {currentStep === 1 && (
         <FadeInOut>
           <FirstStep />

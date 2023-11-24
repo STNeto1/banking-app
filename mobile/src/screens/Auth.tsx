@@ -186,7 +186,6 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
               placeholder="john.doe@mail.com"
               width={"100%"}
               autoComplete="email"
-              backgroundColor={"$backgroundHover"}
               clearButtonMode="unless-editing"
             />
           </VStack>
@@ -200,7 +199,6 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
               autoComplete="password"
               placeholder="JohnDoe123"
               width={"100%"}
-              backgroundColor={"$backgroundHover"}
               clearButtonMode="unless-editing"
             />
           </VStack>
