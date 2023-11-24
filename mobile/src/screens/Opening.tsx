@@ -1,10 +1,9 @@
-import { PiggyBank } from "@tamagui/lucide-icons";
 import { FC, useEffect, useMemo, useState } from "react";
-import { Button, H2, Image, Text, XStack, YStack } from "tamagui";
-import personal from "../assets/images/personal.png";
-import piggy from "../assets/images/piggy.png";
-import transfer from "../assets/images/transfer.png";
+import personal from "../../assets/images/personal.png";
+import piggy from "../../assets/images/piggy.png";
+import transfer from "../../assets/images/transfer.png";
 import { FadeInOut } from "../components/transitions";
+import { Text } from "native-base";
 
 type TSteps = 1 | 2 | 3;
 type TScreenState = "opening" | "steps";

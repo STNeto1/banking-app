@@ -1,78 +1,77 @@
-import { ChevronLeft } from "@tamagui/lucide-icons";
-import { FC } from "react";
-import { Button, Form, Input, Label, Text, XStack, YStack } from "tamagui";
+import { ChevronLeft } from '@tamagui/lucide-icons'
+import { Button, Form, Input, Label, Text, XStack, YStack } from 'tamagui'
 
-export const AuthScreen: FC = () => {
+export const AuthScreen = () => {
   return (
     <YStack
       fullscreen
       backgroundColor="$background"
-      paddingBottom={"$10"}
-      paddingHorizontal={"$4"}
+      paddingBottom={'$10'}
+      paddingHorizontal={'$4'}
       justifyContent="center"
     >
       <YStack flex={1} alignItems="flex-start" justifyContent="center">
-        <Text color={"#001533"} fontSize={30} fontWeight={"700"}>
+        <Text color={'#001533'} fontSize={30} fontWeight={'700'}>
           Welcome to [[Placeholder]]
         </Text>
-        <Text color={"#001533"} fontSize={17} fontWeight={"300"}>
+        <Text color={'#001533'} fontSize={17} fontWeight={'300'}>
           The bank for everyone
         </Text>
       </YStack>
 
-      <YStack width={"100%"} gap={"$4"}>
+      <YStack width={'100%'} gap={'$4'}>
         <Button
-          backgroundColor={"$blue10"}
+          backgroundColor={'$blue10'}
           pressStyle={{
-            backgroundColor: "$blue11",
+            backgroundColor: '$blue11'
           }}
-          color={"white"}
+          color={'white'}
         >
           Create your free account
         </Button>
         <Button
-          backgroundColor={"white"}
+          backgroundColor={'white'}
           pressStyle={{
-            backgroundColor: "$backgroundPress",
+            backgroundColor: '$backgroundPress'
           }}
-          borderColor={"$blue5"}
+          borderColor={'$blue5'}
         >
           Log into your account
         </Button>
       </YStack>
     </YStack>
-  );
-};
+  )
+}
 
-export const LoginScreen: FC = () => {
+export const LoginScreen = () => {
   return (
     <YStack
       fullscreen
       backgroundColor="$background"
-      paddingBottom={"$10"}
-      paddingHorizontal={"$4"}
+      paddingBottom={'$10'}
+      paddingHorizontal={'$4'}
       justifyContent="center"
     >
       <YStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
         <Button
-          size={"$3"}
+          size={'$3'}
           variant="outlined"
           pressStyle={{
-            backgroundColor: "$backgroundPress",
+            backgroundColor: '$backgroundPress'
           }}
           icon={<ChevronLeft size={24} />}
         />
 
         <YStack
           flex={0.5}
-          gap={"$4"}
+          gap={'$4'}
           alignItems="flex-start"
           justifyContent="flex-end"
         >
-          <Text color={"$blue10"} fontSize={30} fontWeight={"700"}>
+          <Text color={'$blue10'} fontSize={30} fontWeight={'700'}>
             Sign into your Account
           </Text>
-          <Text color={"#001533"} fontSize={15} fontWeight={"300"}>
+          <Text color={'#001533'} fontSize={15} fontWeight={'300'}>
             Log into your BankMe account
           </Text>
         </YStack>
@@ -81,7 +80,7 @@ export const LoginScreen: FC = () => {
       <Form
         flex={1.7}
         justifyContent="center"
-        onSubmit={() => console.log("submitting")}
+        onSubmit={() => console.log('submitting')}
       >
         <YStack minWidth={300} space="$2" flex={1} justifyContent="center">
           <YStack alignItems="flex-start">
@@ -89,9 +88,9 @@ export const LoginScreen: FC = () => {
             <Input
               id="email"
               placeholder="john.doe@mail.com"
-              width={"100%"}
+              width={'100%'}
               autoComplete="email"
-              backgroundColor={"$backgroundHover"}
+              backgroundColor={'$backgroundHover'}
               clearButtonMode="unless-editing"
             />
           </YStack>
@@ -104,22 +103,22 @@ export const LoginScreen: FC = () => {
               secureTextEntry
               autoComplete="password"
               placeholder="JohnDoe123"
-              width={"100%"}
-              backgroundColor={"$backgroundHover"}
+              width={'100%'}
+              backgroundColor={'$backgroundHover'}
               clearButtonMode="unless-editing"
             />
           </YStack>
 
           <YStack
-            paddingTop={"$4"}
+            paddingTop={'$4'}
             alignItems="flex-start"
             justifyContent="center"
-            gap={"$2"}
+            gap={'$2'}
           >
-            <Text color={"$blue12Light"} fontSize={15} fontWeight={"300"}>
+            <Text color={'$blue12Light'} fontSize={15} fontWeight={'300'}>
               Have you forgotten your password?
             </Text>
-            <Text color={"$blue11"} fontSize={15} fontWeight={"400"}>
+            <Text color={'$blue11'} fontSize={15} fontWeight={'400'}>
               Click here to reset your password
             </Text>
           </YStack>
@@ -127,54 +126,54 @@ export const LoginScreen: FC = () => {
 
         <YStack alignItems="flex-start" justifyContent="center" gap="$4">
           <Form.Trigger asChild>
-            <Button width={"100%"} backgroundColor={"$blue10"} color={"white"}>
+            <Button width={'100%'} backgroundColor={'$blue10'} color={'white'}>
               Sign in
             </Button>
           </Form.Trigger>
 
-          <XStack width={"100%"} gap={"$2"} justifyContent={"center"}>
-            <Text fontSize={14} fontWeight={"400"}>
+          <XStack width={'100%'} gap={'$2'} justifyContent={'center'}>
+            <Text fontSize={14} fontWeight={'400'}>
               Do you not have a [[Placeholder]] account?
             </Text>
-            <Text color={"$blue10"} fontSize={14} fontWeight={"400"}>
+            <Text color={'$blue10'} fontSize={14} fontWeight={'400'}>
               Sign up here
             </Text>
           </XStack>
         </YStack>
       </Form>
     </YStack>
-  );
-};
+  )
+}
 
-export const RegisterScreen: FC = () => {
+export const RegisterScreen = () => {
   return (
     <YStack
       fullscreen
       backgroundColor="$background"
-      paddingBottom={"$10"}
-      paddingHorizontal={"$4"}
+      paddingBottom={'$10'}
+      paddingHorizontal={'$4'}
       justifyContent="center"
     >
       <YStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
         <Button
-          size={"$3"}
+          size={'$3'}
           variant="outlined"
           pressStyle={{
-            backgroundColor: "$backgroundPress",
+            backgroundColor: '$backgroundPress'
           }}
           icon={<ChevronLeft size={24} />}
         />
 
         <YStack
           flex={0.5}
-          gap={"$4"}
+          gap={'$4'}
           alignItems="flex-start"
           justifyContent="flex-end"
         >
-          <Text color={"$blue10"} fontSize={30} fontWeight={"700"}>
+          <Text color={'$blue10'} fontSize={30} fontWeight={'700'}>
             Create Account
           </Text>
-          <Text color={"#001533"} fontSize={15} fontWeight={"300"}>
+          <Text color={'#001533'} fontSize={15} fontWeight={'300'}>
             Open a BankMe account with a few details.
           </Text>
         </YStack>
@@ -183,7 +182,7 @@ export const RegisterScreen: FC = () => {
       <Form
         flex={1.7}
         justifyContent="center"
-        onSubmit={() => console.log("submitting")}
+        onSubmit={() => console.log('submitting')}
       >
         <YStack minWidth={300} space="$2" flex={1} justifyContent="center">
           <YStack alignItems="flex-start">
@@ -191,8 +190,8 @@ export const RegisterScreen: FC = () => {
             <Input
               id="name"
               placeholder="John Doe"
-              width={"100%"}
-              backgroundColor={"$backgroundHover"}
+              width={'100%'}
+              backgroundColor={'$backgroundHover'}
               autoComplete="name"
               clearButtonMode="unless-editing"
             />
@@ -203,9 +202,9 @@ export const RegisterScreen: FC = () => {
             <Input
               id="email"
               placeholder="john.doe@mail.com"
-              width={"100%"}
+              width={'100%'}
               autoComplete="email"
-              backgroundColor={"$backgroundHover"}
+              backgroundColor={'$backgroundHover'}
               clearButtonMode="unless-editing"
             />
           </YStack>
@@ -218,8 +217,8 @@ export const RegisterScreen: FC = () => {
               secureTextEntry
               autoComplete="password"
               placeholder="JohnDoe123"
-              width={"100%"}
-              backgroundColor={"$backgroundHover"}
+              width={'100%'}
+              backgroundColor={'$backgroundHover'}
               clearButtonMode="unless-editing"
             />
           </YStack>
@@ -232,8 +231,8 @@ export const RegisterScreen: FC = () => {
               secureTextEntry
               autoComplete="password"
               placeholder="JohnDoe123"
-              width={"100%"}
-              backgroundColor={"$backgroundHover"}
+              width={'100%'}
+              backgroundColor={'$backgroundHover'}
               clearButtonMode="unless-editing"
             />
           </YStack>
@@ -241,21 +240,21 @@ export const RegisterScreen: FC = () => {
 
         <YStack alignItems="flex-start" justifyContent="center" gap="$4">
           <Form.Trigger asChild>
-            <Button width={"100%"} backgroundColor={"$blue10"} color={"white"}>
+            <Button width={'100%'} backgroundColor={'$blue10'} color={'white'}>
               Create your account
             </Button>
           </Form.Trigger>
 
-          <XStack width={"100%"} gap={"$2"} justifyContent={"center"}>
-            <Text fontSize={14} fontWeight={"400"}>
+          <XStack width={'100%'} gap={'$2'} justifyContent={'center'}>
+            <Text fontSize={14} fontWeight={'400'}>
               Do you already have a [[Placeholder]] account?
             </Text>
-            <Text color={"$blue10"} fontSize={14} fontWeight={"400"}>
+            <Text color={'$blue10'} fontSize={14} fontWeight={'400'}>
               Sign in here
             </Text>
           </XStack>
         </YStack>
       </Form>
     </YStack>
-  );
-};
+  )
+}
