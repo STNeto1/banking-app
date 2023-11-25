@@ -1,5 +1,13 @@
 import { PiggyBank } from "lucide-react-native";
-import { Button, HStack, Heading, Image, Text, VStack } from "native-base";
+import {
+  Button,
+  ButtonText,
+  HStack,
+  Heading,
+  Image,
+  Text,
+  VStack,
+} from "@gluestack-ui/themed";
 import { FC, useEffect, useMemo, useState } from "react";
 import personal from "../../assets/images/personal.png";
 import piggy from "../../assets/images/piggy.png";
@@ -35,7 +43,12 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
   }
 
   return (
-    <VStack paddingBottom={36} paddingX={4} flex={1}>
+    <VStack
+      paddingBottom={"$8"}
+      paddingHorizontal={"$10"}
+      flex={1}
+      backgroundColor="$white"
+    >
       {currentStep === 1 && (
         <FadeInOut>
           <FirstStep />
@@ -56,11 +69,9 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
         <Steps step={currentStep} />
 
         <Button
-          backgroundColor={"blue.500"}
-          color={"white"}
-          width={"2/6"}
-          _pressed={{
-            backgroundColor: "blue.600",
+          backgroundColor={"$blue500"}
+          $active={{
+            backgroundColor: "$blue600",
           }}
           onPress={() => {
             if (currentStep === 3) {
@@ -72,7 +83,7 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
             setCurrentStep((currentStep + 1) as TSteps);
           }}
         >
-          Next
+          <ButtonText color="$white">Next</ButtonText>
         </Button>
       </HStack>
     </VStack>
@@ -89,7 +100,7 @@ const Title: FC<{ title: string }> = ({ title }) => {
 
 const Subtitle: FC<{ message: string }> = ({ message }) => {
   return (
-    <Text color={"#001533"} fontSize={17} fontWeight={"300"} lineHeight={"md"}>
+    <Text color={"#001533"} fontSize={17} fontWeight={"300"} lineHeight={"$lg"}>
       {message}
     </Text>
   );
@@ -102,9 +113,9 @@ const Steps: FC<{ step: 1 | 2 | 3 }> = ({ step }) => {
         return (
           <HStack
             key={`step-${v + 1}`}
-            backgroundColor={"blue.500"}
-            width={10}
-            height={4}
+            backgroundColor={"$blue500"}
+            width={"$10"}
+            height={"$4"}
             borderRadius={99}
           />
         );
@@ -113,16 +124,16 @@ const Steps: FC<{ step: 1 | 2 | 3 }> = ({ step }) => {
       return (
         <HStack
           key={`step-${v + 1}`}
-          backgroundColor={"blue.300"}
-          width={4}
-          height={4}
+          backgroundColor={"$blue300"}
+          width={"$4"}
+          height={"$4"}
           borderRadius={99}
         />
       );
     });
   }, [step]);
 
-  return <HStack space={2}>{items}</HStack>;
+  return <HStack space={"sm"}>{items}</HStack>;
 };
 
 const Entry: FC = () => {
@@ -144,10 +155,10 @@ const Entry: FC = () => {
 
 const FirstStep: FC = () => {
   return (
-    <VStack alignItems="center" justifyContent="center" flex={1} space={"10"}>
+    <VStack alignItems="center" justifyContent="center" flex={1} space={"xl"}>
       <Image source={piggy} width={300} height={300} alt="piggy bank" />
 
-      <VStack space={2}>
+      <VStack space={"sm"}>
         <Title title="Save Money" />
         <Subtitle
           message="We help you meet your savings target monthly and our emergency plans
@@ -160,7 +171,7 @@ const FirstStep: FC = () => {
 
 const SecondStep: FC = () => {
   return (
-    <VStack alignItems="center" justifyContent="center" flex={1} space={"10"}>
+    <VStack alignItems="center" justifyContent="center" flex={1} space={"xl"}>
       <Image
         source={transfer}
         width={300}
@@ -168,9 +179,9 @@ const SecondStep: FC = () => {
         alt="transfering money"
       />
 
-      <VStack space={2}>
+      <VStack space={"sm"}>
         <Title title="Withdraw your money" />
-        <Subtitle message="With just your phone number, you can withdraw your funds at any point in time from any BankMe agent close to you." />
+        <Subtitle message="With just your phone number, you can withdraw your funds at any point in time from any [[Placeholder]] agent close to you." />
       </VStack>
     </VStack>
   );
@@ -178,10 +189,10 @@ const SecondStep: FC = () => {
 
 const ThirdStep: FC = () => {
   return (
-    <VStack alignItems="center" justifyContent="center" flex={1} space={"10"}>
+    <VStack alignItems="center" justifyContent="center" flex={1} space={"xl"}>
       <Image source={personal} width={300} height={300} alt="person" />
 
-      <VStack space={2}>
+      <VStack space={"sm"}>
         <Title title="Invest your money" />
         <Subtitle message="Get access to risk free investments that will multiply your income and pay high returns in few months" />
       </VStack>

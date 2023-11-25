@@ -1,64 +1,63 @@
 import {
   Button,
-  VStack,
-  HStack,
-  Text,
-  Input,
+  ButtonIcon,
+  ButtonText,
   FormControl,
-  ChevronLeftIcon,
-  WarningOutlineIcon,
-} from "native-base";
-import { Controller, useForm } from "react-hook-form";
+  FormControlError,
+  FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText,
+  HStack,
+  Input,
+  Text,
+  VStack,
+} from "@gluestack-ui/themed";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import {
-  object,
-  string,
-  minLength,
-  endsWith,
-  Input as VInput,
-  email,
-  custom,
-} from "valibot";
-import { AuthProps, LoginProps, RegisterProps } from "../routes";
+import { Controller, useForm } from "react-hook-form";
 import { Alert } from "react-native";
+import { Input as VInput, email, minLength, object, string } from "valibot";
+import { AuthProps, LoginProps, RegisterProps } from "../routes";
+import { InputField } from "@gluestack-ui/themed";
+import { Heading } from "@gluestack-ui/themed";
+import { ChevronLeft } from "lucide-react-native";
 
 export const AuthScreen = ({ navigation }: AuthProps) => {
   return (
     <VStack
       flex={1}
-      paddingBottom={"10"}
-      paddingX={"4"}
+      paddingBottom={"$10"}
+      paddingHorizontal={"$8"}
       justifyContent="center"
     >
       <VStack flex={1} alignItems="flex-start" justifyContent="center">
-        <Text color={"#001533"} fontSize={30} fontWeight={"700"}>
+        <Heading color={"#001533"} size={"xl"} fontWeight={"700"}>
           Welcome to [[Placeholder]]
-        </Text>
-        <Text color={"#001533"} fontSize={17} fontWeight={"300"}>
+        </Heading>
+        <Heading color={"#001533"} size="sm" fontWeight={"300"}>
           The bank for everyone
-        </Text>
+        </Heading>
       </VStack>
 
-      <VStack width={"100%"} space={4}>
+      <VStack width={"100%"} space={"sm"}>
         <Button
-          backgroundColor={"blue.500"}
-          _pressed={{
-            backgroundColor: "blue.800",
+          backgroundColor={"$blue500"}
+          $active={{
+            backgroundColor: "$blue800",
           }}
           onPress={() => navigation.push("Register")}
         >
-          Create your free account
+          <ButtonText>Create your free account</ButtonText>
         </Button>
         <Button
-          variant={"unstyled"}
+          variant={"outline"}
           borderWidth={1}
-          borderColor={"blue.300"}
-          _pressed={{
-            backgroundColor: "gray.200",
+          borderColor={"$blue300"}
+          $active={{
+            backgroundColor: "$blue500",
           }}
           onPress={() => navigation.push("Login")}
         >
-          Log into your account
+          <ButtonText>Log into your account</ButtonText>
         </Button>
       </VStack>
     </VStack>
@@ -100,107 +99,116 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
   return (
     <VStack
       flex={1}
-      paddingBottom={"10"}
-      paddingX={"4"}
+      paddingBottom={"$10"}
+      paddingHorizontal={"$4"}
       justifyContent="center"
     >
       <VStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
         <Button
-          size={"md"}
-          variant="outlined"
-          leftIcon={<ChevronLeftIcon />}
+          size={"xs"}
           onPress={() => navigation.goBack()}
-        />
+          variant="outline"
+        >
+          <ButtonText as={ChevronLeft} />
+        </Button>
 
         <VStack
           flex={0.5}
-          space={"4"}
+          space={"sm"}
           alignItems="flex-start"
           justifyContent="flex-end"
         >
-          <Text color={"blue.700"} fontSize={30} fontWeight={"700"}>
+          <Heading color={"$blue700"} size="2xl" fontWeight={"700"}>
             Sig in into your Account
-          </Text>
-          <Text color={"#001533"} fontSize={15} fontWeight={"300"}>
-            Log into your BankMe account
-          </Text>
+          </Heading>
+          <Heading color={"#001533"} size="md" fontWeight={"300"}>
+            Log into your [[placeholder]] account
+          </Heading>
         </VStack>
       </VStack>
 
       <FormControl flex={1.7} justifyContent="center">
-        <VStack minWidth={300} space="2" flex={1} justifyContent="center">
+        <VStack minWidth={300} gap="$4" flex={1} justifyContent="center">
           <VStack alignItems="flex-start">
-            <FormControl.Label htmlFor="email">Email</FormControl.Label>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  id="email"
-                  placeholder="john.doe@mail.com"
-                  width={"100%"}
-                  autoComplete="email"
-                  clearButtonMode="unless-editing"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+            <FormControl isInvalid={!!errors.email} width={"100%"}>
+              <FormControlLabel mb="$1">
+                <FormControlLabelText>Email</FormControlLabelText>
+              </FormControlLabel>
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input>
+                    <InputField
+                      id="email"
+                      placeholder="john.doe@mail.com"
+                      width={"100%"}
+                      autoComplete="email"
+                      clearButtonMode="unless-editing"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
+                )}
+              />
+              {errors.email && (
+                <FormControlError>
+                  <FormControlErrorText>
+                    {errors.email.message}
+                  </FormControlErrorText>
+                </FormControlError>
               )}
-            />
-            {errors.email && (
-              <FormControl.HelperText>
-                {errors.email.message}
-              </FormControl.HelperText>
-            )}
+            </FormControl>
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl.Label htmlFor="password">Password</FormControl.Label>
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  id="password"
-                  textContentType="password"
-                  secureTextEntry
-                  autoComplete="password"
-                  placeholder="JohnDoe123"
-                  width={"100%"}
-                  clearButtonMode="unless-editing"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+            <FormControl isInvalid={!!errors.password} width={"100%"}>
+              <FormControlLabel mb="$1">
+                <FormControlLabelText>Password</FormControlLabelText>
+              </FormControlLabel>
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input>
+                    <InputField
+                      id="password"
+                      textContentType="password"
+                      secureTextEntry
+                      autoComplete="password"
+                      placeholder="JohnDoe123"
+                      width={"100%"}
+                      clearButtonMode="unless-editing"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
+                )}
+              />
+              {errors.password && (
+                <FormControlError>
+                  <FormControlErrorText>
+                    {errors.password.message}
+                  </FormControlErrorText>
+                </FormControlError>
               )}
-            />
-            {errors.password && (
-              <FormControl.HelperText color={"red.100"}>
-                {errors.password.message}
-              </FormControl.HelperText>
-            )}
+            </FormControl>
           </VStack>
         </VStack>
 
-        <VStack alignItems="flex-start" justifyContent="center" space="4">
-          <Button
-            width={"100%"}
-            backgroundColor={"blue.600"}
-            _pressed={{
-              backgroundColor: "blue.800",
-            }}
-            color={"white"}
-            onPress={handleSubmit(onSubmit)}
-          >
-            Sign in
+        <VStack alignItems="flex-start" justifyContent="center" space="lg">
+          <Button width={"100%"} onPress={handleSubmit(onSubmit)}>
+            <ButtonText>Sign in</ButtonText>
           </Button>
 
-          <HStack width={"100%"} space={"2"} justifyContent={"center"}>
+          <HStack width={"100%"} space={"sm"} justifyContent={"center"}>
             <Text fontSize={14} fontWeight={"400"}>
               Do you not have a [[Placeholder]] account?
             </Text>
             <Text
-              color={"blue.600"}
+              color={"$blue600"}
               fontSize={14}
               fontWeight={"400"}
               onPress={() => navigation.push("Register")}
@@ -261,162 +269,180 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
   return (
     <VStack
       flex={1}
-      backgroundColor="gray.100"
-      paddingBottom={"10"}
-      paddingX={"4"}
+      paddingBottom={"$10"}
+      paddingHorizontal={"$4"}
       justifyContent="center"
     >
       <VStack flex={0.75} alignItems="flex-start" justifyContent="flex-end">
         <Button
           size={"md"}
-          variant="outlined"
-          leftIcon={<ChevronLeftIcon />}
           onPress={() => navigation.goBack()}
-        />
-
-        <VStack
-          flex={0.5}
-          space={"4"}
-          alignItems="flex-start"
-          justifyContent="flex-end"
+          variant="outline"
         >
-          <Text color={"blue.700"} fontSize={30} fontWeight={"700"}>
+          <ButtonIcon as={ChevronLeft} />
+        </Button>
+
+        <VStack flex={0.5} alignItems="flex-start" justifyContent="flex-end">
+          <Heading color={"$blue700"} size="2xl" fontWeight={"700"}>
             Create Account
-          </Text>
-          <Text color={"#001533"} fontSize={15} fontWeight={"300"}>
-            Open a BankMe account with a few details.
-          </Text>
+          </Heading>
+          <Heading color={"#001533"} size="md" fontWeight={"300"}>
+            Open a [[placeholder]] account with a few details.
+          </Heading>
         </VStack>
       </VStack>
 
       <FormControl flex={1.7} justifyContent="center">
-        <VStack minWidth={300} space="3" flex={1} justifyContent="center">
+        <VStack minWidth={300} flex={1} justifyContent="center" gap={"$4"}>
           <VStack alignItems="flex-start">
-            <FormControl.Label htmlFor="name">Name</FormControl.Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  id="name"
-                  placeholder="John Doe"
-                  width={"100%"}
-                  autoComplete="name"
-                  clearButtonMode="unless-editing"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+            <FormControl isInvalid={!!errors.name} width={"100%"}>
+              <FormControlLabel mb="$1">
+                <FormControlLabelText>Name</FormControlLabelText>
+              </FormControlLabel>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input>
+                    <InputField
+                      id="name"
+                      placeholder="John Doe"
+                      width={"100%"}
+                      autoComplete="name"
+                      clearButtonMode="unless-editing"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
+                )}
+              />
+              {errors.name && (
+                <FormControlError>
+                  <FormControlErrorText>
+                    {errors.name.message}
+                  </FormControlErrorText>
+                </FormControlError>
               )}
-            />
-            {errors.name && (
-              <FormControl.HelperText>
-                {errors.name.message}
-              </FormControl.HelperText>
-            )}
+            </FormControl>
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl.Label htmlFor="email">Email</FormControl.Label>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  id="email"
-                  placeholder="john.doe@mail.com"
-                  width={"100%"}
-                  autoComplete="email"
-                  clearButtonMode="unless-editing"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+            <FormControl isInvalid={!!errors.email} width={"100%"}>
+              <FormControlLabel mb="$1">
+                <FormControlLabelText>Email</FormControlLabelText>
+              </FormControlLabel>
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input>
+                    <InputField
+                      id="email"
+                      placeholder="john.doe@mail.com"
+                      width={"100%"}
+                      autoComplete="email"
+                      clearButtonMode="unless-editing"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
+                )}
+              />
+              {errors.email && (
+                <FormControlError>
+                  <FormControlErrorText>
+                    {errors.email.message}
+                  </FormControlErrorText>
+                </FormControlError>
               )}
-            />
-            {errors.email && (
-              <FormControl.HelperText>
-                {errors.email.message}
-              </FormControl.HelperText>
-            )}
+            </FormControl>
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl.Label htmlFor="password">Password</FormControl.Label>
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  id="password"
-                  textContentType="password"
-                  secureTextEntry
-                  autoComplete="password"
-                  placeholder="JohnDoe123"
-                  width={"100%"}
-                  clearButtonMode="unless-editing"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+            <FormControl isInvalid={!!errors.password} width={"100%"}>
+              <FormControlLabel mb="$1">
+                <FormControlLabelText>Password</FormControlLabelText>
+              </FormControlLabel>
+
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input>
+                    <InputField
+                      id="password"
+                      textContentType="password"
+                      secureTextEntry
+                      autoComplete="password"
+                      placeholder="JohnDoe123"
+                      width={"100%"}
+                      clearButtonMode="unless-editing"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
+                )}
+              />
+              {errors.password && (
+                <FormControlError>
+                  <FormControlErrorText>
+                    {errors.password.message}
+                  </FormControlErrorText>
+                </FormControlError>
               )}
-            />
-            {errors.password && (
-              <FormControl.HelperText>
-                {errors.password.message}
-              </FormControl.HelperText>
-            )}
+            </FormControl>
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl.Label htmlFor="confirm_password">
-              Confirm Password
-            </FormControl.Label>
-            <Controller
-              control={control}
-              name="confirm_password"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  id="confirm_password"
-                  textContentType="password"
-                  secureTextEntry
-                  autoComplete="password"
-                  placeholder="JohnDoe123"
-                  width={"100%"}
-                  clearButtonMode="unless-editing"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+            <FormControl isInvalid={!!errors.confirm_password} width={"100%"}>
+              <FormControlLabel mb="$1">
+                <FormControlLabelText>Confirm Password</FormControlLabelText>
+              </FormControlLabel>
+              <Controller
+                control={control}
+                name="confirm_password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input>
+                    <InputField
+                      id="confirm_password"
+                      textContentType="password"
+                      secureTextEntry
+                      autoComplete="password"
+                      placeholder="JohnDoe123"
+                      width={"100%"}
+                      clearButtonMode="unless-editing"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
+                )}
+              />
+              {errors.confirm_password && (
+                <FormControlError>
+                  <FormControlErrorText>
+                    {errors.confirm_password.message}
+                  </FormControlErrorText>
+                </FormControlError>
               )}
-            />
-            {errors.confirm_password && (
-              <FormControl.HelperText>
-                {errors.confirm_password.message}
-              </FormControl.HelperText>
-            )}
+            </FormControl>
           </VStack>
         </VStack>
 
-        <VStack alignItems="flex-start" justifyContent="center" space="4">
-          <Button
-            width={"100%"}
-            backgroundColor={"blue.500"}
-            _pressed={{
-              backgroundColor: "blue.800",
-            }}
-            color={"white"}
-            onPress={handleSubmit(onSubmit)}
-          >
-            Create your account
+        <VStack alignItems="flex-start" justifyContent="center" space="lg">
+          <Button width={"100%"} onPress={handleSubmit(onSubmit)}>
+            <ButtonText>Create your account</ButtonText>
           </Button>
 
-          <HStack width={"100%"} space={"2"} justifyContent={"center"}>
+          <HStack width={"100%"} justifyContent={"center"}>
             <Text fontSize={14} fontWeight={"400"}>
               Do you already have a [[Placeholder]] account?
             </Text>
             <Text
-              color={"blue.800"}
+              color={"$blue800"}
               fontSize={14}
               fontWeight={"400"}
               onPress={() => navigation.push("Login")}

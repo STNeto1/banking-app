@@ -1,13 +1,13 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { NativeBaseProvider } from "native-base";
 import { Stack, routes } from "./src/routes";
-import { theme } from "./src/theme";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
+import { config } from "@gluestack-ui/config";
 
 export default function App() {
   return (
-    <NativeBaseProvider theme={theme}>
+    <GluestackUIProvider config={config}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Auth">
+        <Stack.Navigator initialRouteName="Opening">
           {routes.map((route) => (
             <Stack.Screen
               key={route.name}
@@ -18,6 +18,6 @@ export default function App() {
           ))}
         </Stack.Navigator>
       </NavigationContainer>
-    </NativeBaseProvider>
+    </GluestackUIProvider>
   );
 }
