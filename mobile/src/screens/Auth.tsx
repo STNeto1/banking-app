@@ -11,17 +11,23 @@ import {
   Input,
   Text,
   VStack,
+  InputField,
+  Heading,
+  AlertIcon,
+  AlertText,
+  Alert,
+  InfoIcon,
 } from "@gluestack-ui/themed";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { Controller, useForm } from "react-hook-form";
-import { Alert } from "react-native";
-import { Input as VInput, email, minLength, object, string } from "valibot";
-import { AuthProps, LoginProps, RegisterProps } from "../routes";
-import { InputField } from "@gluestack-ui/themed";
-import { Heading } from "@gluestack-ui/themed";
 import { ChevronLeft } from "lucide-react-native";
-import { useMutation } from "@tanstack/react-query";
-import { useAuthServicePostAuthLogin } from "../lib/openapi/queries";
+import { Controller, useForm } from "react-hook-form";
+import { Alert as RNAlert } from "react-native";
+import { Input as VInput, email, minLength, object, string } from "valibot";
+import {
+  useAuthServicePostAuthLogin,
+  useAuthServicePostAuthRegister,
+} from "../lib/openapi/queries";
+import { AuthProps, LoginProps, RegisterProps } from "../routes";
 
 export const AuthScreen = ({ navigation }: AuthProps) => {
   return (
@@ -77,7 +83,20 @@ type TLoginSchema = VInput<typeof loginSchema>;
 
 export const LoginScreen = ({ navigation }: LoginProps) => {
   const { mutate, isPending, error } = useAuthServicePostAuthLogin({
-    onSuccess: (data) => {},
+    onSuccess: (data) => {
+      RNAlert.alert("Form Data", JSON.stringify(data, null, 2), [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => console.log("OK Pressed"),
+          style: "default",
+        },
+      ]);
+    },
   });
 
   const {
@@ -88,18 +107,12 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
     resolver: valibotResolver(loginSchema),
   });
   const onSubmit = (data: TLoginSchema) => {
-    Alert.alert("Form Data", JSON.stringify(data, null, 2), [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel",
+    mutate({
+      body: {
+        email: data.email,
+        password: data.password,
       },
-      {
-        text: "OK",
-        onPress: () => console.log("OK Pressed"),
-        style: "default",
-      },
-    ]);
+    });
   };
 
   return (
@@ -125,7 +138,7 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
           justifyContent="flex-end"
         >
           <Heading color={"$blue700"} size="2xl" fontWeight={"700"}>
-            Sig in into your Account
+            Sign in into your Account
           </Heading>
           <Heading color={"#001533"} size="md" fontWeight={"300"}>
             Log into your [[placeholder]] account
@@ -136,7 +149,11 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
       <FormControl flex={1.7} justifyContent="center">
         <VStack minWidth={300} gap="$4" flex={1} justifyContent="center">
           <VStack alignItems="flex-start">
-            <FormControl isInvalid={!!errors.email} width={"100%"}>
+            <FormControl
+              isInvalid={!!errors.email}
+              isDisabled={isPending}
+              width={"100%"}
+            >
               <FormControlLabel mb="$1">
                 <FormControlLabelText>Email</FormControlLabelText>
               </FormControlLabel>
@@ -149,6 +166,7 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
                       id="email"
                       placeholder="john.doe@mail.com"
                       width={"100%"}
+                      backgroundColor="$white"
                       autoComplete="email"
                       clearButtonMode="unless-editing"
                       onBlur={onBlur}
@@ -169,7 +187,11 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl isInvalid={!!errors.password} width={"100%"}>
+            <FormControl
+              isInvalid={!!errors.password}
+              isDisabled={isPending}
+              width={"100%"}
+            >
               <FormControlLabel mb="$1">
                 <FormControlLabelText>Password</FormControlLabelText>
               </FormControlLabel>
@@ -185,6 +207,7 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
                       autoComplete="password"
                       placeholder="JohnDoe123"
                       width={"100%"}
+                      backgroundColor="$white"
                       clearButtonMode="unless-editing"
                       onBlur={onBlur}
                       onChangeText={onChange}
@@ -205,7 +228,20 @@ export const LoginScreen = ({ navigation }: LoginProps) => {
         </VStack>
 
         <VStack alignItems="flex-start" justifyContent="center" space="lg">
-          <Button width={"100%"} onPress={handleSubmit(onSubmit)}>
+          {!!error && (
+            <Alert mx="$2.5" action="error" variant="solid">
+              <AlertIcon as={InfoIcon} mr="$3" />
+              <AlertText>
+                {error?.body?.message ?? "Something went wrong"}
+              </AlertText>
+            </Alert>
+          )}
+
+          <Button
+            width={"100%"}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isPending}
+          >
             <ButtonText>Sign in</ButtonText>
           </Button>
 
@@ -241,6 +277,23 @@ const registerSchema = object({
 type TRegisterSchema = VInput<typeof registerSchema>;
 
 export const RegisterScreen = ({ navigation }: RegisterProps) => {
+  const { mutate, isPending, error } = useAuthServicePostAuthRegister({
+    onSuccess: (data) => {
+      RNAlert.alert("Form Data", JSON.stringify(data, null, 2), [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => console.log("OK Pressed"),
+          style: "default",
+        },
+      ]);
+    },
+  });
+
   const {
     handleSubmit,
     control,
@@ -258,18 +311,13 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
       return;
     }
 
-    Alert.alert("Form Data", JSON.stringify(data, null, 2), [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel",
+    mutate({
+      body: {
+        name: data.name,
+        email: data.email,
+        password: data.password,
       },
-      {
-        text: "OK",
-        onPress: () => console.log("OK Pressed"),
-        style: "default",
-      },
-    ]);
+    });
   };
 
   return (
@@ -301,7 +349,11 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
       <FormControl flex={1.7} justifyContent="center">
         <VStack minWidth={300} flex={1} justifyContent="center" gap={"$4"}>
           <VStack alignItems="flex-start">
-            <FormControl isInvalid={!!errors.name} width={"100%"}>
+            <FormControl
+              isInvalid={!!errors.name}
+              isDisabled={isPending}
+              width={"100%"}
+            >
               <FormControlLabel mb="$1">
                 <FormControlLabelText>Name</FormControlLabelText>
               </FormControlLabel>
@@ -314,6 +366,7 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
                       id="name"
                       placeholder="John Doe"
                       width={"100%"}
+                      backgroundColor="$white"
                       autoComplete="name"
                       clearButtonMode="unless-editing"
                       onBlur={onBlur}
@@ -334,7 +387,11 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl isInvalid={!!errors.email} width={"100%"}>
+            <FormControl
+              isInvalid={!!errors.email}
+              isDisabled={isPending}
+              width={"100%"}
+            >
               <FormControlLabel mb="$1">
                 <FormControlLabelText>Email</FormControlLabelText>
               </FormControlLabel>
@@ -347,6 +404,7 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
                       id="email"
                       placeholder="john.doe@mail.com"
                       width={"100%"}
+                      backgroundColor="$white"
                       autoComplete="email"
                       clearButtonMode="unless-editing"
                       onBlur={onBlur}
@@ -367,7 +425,11 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl isInvalid={!!errors.password} width={"100%"}>
+            <FormControl
+              isInvalid={!!errors.password}
+              isDisabled={isPending}
+              width={"100%"}
+            >
               <FormControlLabel mb="$1">
                 <FormControlLabelText>Password</FormControlLabelText>
               </FormControlLabel>
@@ -384,6 +446,7 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
                       autoComplete="password"
                       placeholder="JohnDoe123"
                       width={"100%"}
+                      backgroundColor="$white"
                       clearButtonMode="unless-editing"
                       onBlur={onBlur}
                       onChangeText={onChange}
@@ -403,7 +466,11 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
           </VStack>
 
           <VStack alignItems="flex-start">
-            <FormControl isInvalid={!!errors.confirm_password} width={"100%"}>
+            <FormControl
+              isInvalid={!!errors.confirm_password}
+              isDisabled={isPending}
+              width={"100%"}
+            >
               <FormControlLabel mb="$1">
                 <FormControlLabelText>Confirm Password</FormControlLabelText>
               </FormControlLabel>
@@ -419,6 +486,7 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
                       autoComplete="password"
                       placeholder="JohnDoe123"
                       width={"100%"}
+                      backgroundColor="$white"
                       clearButtonMode="unless-editing"
                       onBlur={onBlur}
                       onChangeText={onChange}
@@ -439,11 +507,24 @@ export const RegisterScreen = ({ navigation }: RegisterProps) => {
         </VStack>
 
         <VStack alignItems="flex-start" justifyContent="center" space="lg">
-          <Button width={"100%"} onPress={handleSubmit(onSubmit)}>
+          {!!error && (
+            <Alert mx="$2.5" action="error" variant="solid">
+              <AlertIcon as={InfoIcon} mr="$3" />
+              <AlertText>
+                {error?.body?.message ?? "Something went wrong"}
+              </AlertText>
+            </Alert>
+          )}
+
+          <Button
+            width={"100%"}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isPending}
+          >
             <ButtonText>Create your account</ButtonText>
           </Button>
 
-          <HStack width={"100%"} justifyContent={"center"}>
+          <HStack width={"100%"} justifyContent={"center"} space={"sm"}>
             <Text fontSize={14} fontWeight={"400"}>
               Do you already have a [[Placeholder]] account?
             </Text>
