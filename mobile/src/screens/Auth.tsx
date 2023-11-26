@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertIcon,
+  AlertText,
   Button,
   ButtonIcon,
   ButtonText,
@@ -8,25 +11,26 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
+  Heading,
+  InfoIcon,
   Input,
+  InputField,
   Text,
   VStack,
-  InputField,
-  Heading,
-  AlertIcon,
-  AlertText,
-  Alert,
-  InfoIcon,
 } from "@gluestack-ui/themed";
 import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useQuery } from "@tanstack/react-query";
+import * as SecureStore from "expo-secure-store";
 import { ChevronLeft } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
-import { Alert as RNAlert } from "react-native";
 import { Input as VInput, email, minLength, object, string } from "valibot";
 import {
   useAuthServicePostAuthLogin,
   useAuthServicePostAuthRegister,
 } from "../lib/openapi/queries";
+import { AuthService } from "../lib/openapi/requests";
+import { AUTH_KEY } from "../lib/storage";
+import { useSetToken, useSetUser, useToken } from "../lib/stores/auth";
 import { AuthProps, LoginProps, RegisterProps } from "../routes";
 
 export const AuthScreen = ({ navigation }: AuthProps) => {
@@ -82,22 +86,48 @@ const loginSchema = object({
 type TLoginSchema = VInput<typeof loginSchema>;
 
 export const LoginScreen = ({ navigation }: LoginProps) => {
-  const { mutate, isPending, error } = useAuthServicePostAuthLogin({
-    onSuccess: (data) => {
-      RNAlert.alert("Form Data", JSON.stringify(data, null, 2), [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => console.log("OK Pressed"),
-          style: "default",
-        },
-      ]);
+  const setToken = useSetToken();
+  const token = useToken();
+  const setUser = useSetUser();
+
+  const {
+    mutate,
+    isPending: pendingLogin,
+    error: loginError,
+  } = useAuthServicePostAuthLogin({
+    onSuccess: async (data) => {
+      if (!data.token) {
+        // why this would happen?
+        return;
+      }
+
+      await SecureStore.setItemAsync(AUTH_KEY, data.token, {
+        keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      });
+      setToken(data.token);
     },
   });
+
+  const { error: profileError } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const user = await AuthService.getAuthProfile(token ?? "");
+      setUser(user);
+
+      // TODO - send to a better page
+      navigation.navigate("Opening");
+
+      return true;
+    },
+    enabled: !!token,
+    retry: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const isPending = pendingLogin;
+  const error = loginError ?? profileError;
 
   const {
     handleSubmit,
@@ -277,22 +307,48 @@ const registerSchema = object({
 type TRegisterSchema = VInput<typeof registerSchema>;
 
 export const RegisterScreen = ({ navigation }: RegisterProps) => {
-  const { mutate, isPending, error } = useAuthServicePostAuthRegister({
-    onSuccess: (data) => {
-      RNAlert.alert("Form Data", JSON.stringify(data, null, 2), [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => console.log("OK Pressed"),
-          style: "default",
-        },
-      ]);
+  const setToken = useSetToken();
+  const token = useToken();
+  const setUser = useSetUser();
+
+  const {
+    mutate,
+    isPending: pendingRegister,
+    error: registerError,
+  } = useAuthServicePostAuthRegister({
+    onSuccess: async (data) => {
+      if (!data.token) {
+        // why this would happen?
+        return;
+      }
+
+      await SecureStore.setItemAsync(AUTH_KEY, data.token, {
+        keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      });
+      setToken(data.token);
     },
   });
+
+  const { error: profileError } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const user = await AuthService.getAuthProfile(token ?? "");
+      setUser(user);
+
+      // TODO - send to a better page
+      navigation.navigate("Opening");
+
+      return true;
+    },
+    enabled: !!token,
+    retry: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const isPending = pendingRegister;
+  const error = registerError ?? profileError;
 
   const {
     handleSubmit,

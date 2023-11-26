@@ -9,18 +9,59 @@ import {
   VStack,
 } from "@gluestack-ui/themed";
 import { FC, useEffect, useMemo, useState } from "react";
+import * as SecureStore from "expo-secure-store";
 import personal from "../../assets/images/personal.png";
 import piggy from "../../assets/images/piggy.png";
 import transfer from "../../assets/images/transfer.png";
 import { FadeInOut } from "../components/transitions";
 import { OpeningProps } from "../routes";
+import { AUTH_KEY } from "../lib/storage";
+import { useSetToken, useSetUser, useToken } from "../lib/stores/auth";
+import { AuthService } from "../lib/openapi/requests";
+import { useQuery } from "@tanstack/react-query";
 
 type TSteps = 1 | 2 | 3;
-type TScreenState = "opening" | "steps";
+type TScreenState = "checking" | "opening" | "steps";
 
 export const OpeningScreen = ({ navigation }: OpeningProps) => {
-  const [screenState, setScreenState] = useState<TScreenState>("opening");
+  const setToken = useSetToken();
+  const token = useToken();
+  const setUser = useSetUser();
+
+  const [screenState, setScreenState] = useState<TScreenState>("checking");
   const [currentStep, setCurrentStep] = useState<TSteps>(1);
+
+  useEffect(() => {
+    async function fn() {
+      const token = await SecureStore.getItemAsync(AUTH_KEY);
+      if (!token) {
+        setScreenState("opening");
+        return;
+      }
+
+      setToken(token);
+    }
+
+    fn();
+  }, []);
+
+  useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const user = await AuthService.getAuthProfile(token ?? "");
+      setUser(user);
+
+      // TODO - send to a better page
+      // navigation.navigate("Opening");
+
+      return true;
+    },
+    enabled: !!token,
+    retry: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
     if (screenState !== "opening") {
@@ -34,7 +75,7 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
     return () => clearTimeout(timer);
   }, [screenState]);
 
-  if (screenState === "opening") {
+  if (screenState === "checking" || screenState === "opening") {
     return (
       <FadeInOut>
         <Entry />
