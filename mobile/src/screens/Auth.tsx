@@ -20,6 +20,8 @@ import { AuthProps, LoginProps, RegisterProps } from "../routes";
 import { InputField } from "@gluestack-ui/themed";
 import { Heading } from "@gluestack-ui/themed";
 import { ChevronLeft } from "lucide-react-native";
+import { useMutation } from "@tanstack/react-query";
+import { useAuthServicePostAuthLogin } from "../lib/openapi/queries";
 
 export const AuthScreen = ({ navigation }: AuthProps) => {
   return (
@@ -74,6 +76,10 @@ const loginSchema = object({
 type TLoginSchema = VInput<typeof loginSchema>;
 
 export const LoginScreen = ({ navigation }: LoginProps) => {
+  const { mutate, isPending, error } = useAuthServicePostAuthLogin({
+    onSuccess: (data) => {},
+  });
+
   const {
     handleSubmit,
     control,

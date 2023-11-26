@@ -37,7 +37,11 @@ func main() {
 
 	app := echo.New()
 
-	app.Use(middleware.Recover(), middleware.Logger())
+	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8081"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}), middleware.Recover(), middleware.Logger())
 
 	app.GET("/health", handlerContainer.HealthHandler)
 

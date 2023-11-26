@@ -6,7 +6,8 @@
 		"start": "expo start",
 		"android": "expo start --android",
 		"ios": "expo start --ios",
-		"web": "expo start --web"
+		"web": "expo start --web",
+		"codegen": "openapi-rq -i ./bank.yaml -o src/lib/openapi"
 	},
 	"dependencies": {
 		"@gluestack-style/react": "^1.0.17",
@@ -15,6 +16,7 @@
 		"@hookform/resolvers": "^3.3.2",
 		"@react-navigation/native": "^6.1.9",
 		"@react-navigation/native-stack": "^6.9.17",
+		"@tanstack/react-query": "^5.8.7",
 		"babel-plugin-transform-inline-environment-variables": "^0.4.4",
 		"expo": "~49.0.15",
 		"expo-font": "~11.4.0",
@@ -29,6 +31,7 @@
 		"valibot": "^0.21.0"
 	},
 	"devDependencies": {
+		"@7nohe/openapi-react-query-codegen": "^0.5.1",
 		"@babel/core": "^7.20.0",
 		"@types/react": "~18.2.14",
 		"typescript": "^5.1.3"
