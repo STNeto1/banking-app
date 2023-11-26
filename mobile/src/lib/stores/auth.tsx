@@ -7,6 +7,8 @@ type AuthStore = {
 
   setToken: (data: string) => void;
   setUser: (data: core_User) => void;
+
+  logout: () => void;
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -23,6 +25,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set((state) => ({
       ...state,
       user: data,
+    }));
+  },
+  logout: () => {
+    set((state) => ({
+      ...state,
+      user: null,
+      token: null,
     }));
   },
 }));
@@ -43,4 +52,9 @@ export const useSetUser = () => {
 
 export const useSetToken = () => {
   return useAuthStore((state) => state.setToken);
+};
+
+// Actions
+export const useLogout = () => {
+  return useAuthStore((state) => state.logout);
 };

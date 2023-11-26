@@ -5,12 +5,14 @@ import {
 } from "@react-navigation/native-stack";
 import { AuthScreen, LoginScreen, RegisterScreen } from "./screens/Auth";
 import { OpeningScreen } from "./screens/Opening";
+import { HomeScreen } from "./screens/Home";
 
 export type RootStackParamList = {
 	Opening: undefined;
 	Auth: undefined;
 	Login: undefined;
 	Register: undefined;
+	Home: undefined;
 };
 
 export type OpeningProps = NativeStackScreenProps<
@@ -25,6 +27,8 @@ export type RegisterProps = NativeStackScreenProps<
 	RootStackParamList,
 	"Register"
 >;
+
+export type HomeProps = NativeStackScreenProps<RootStackParamList, "Home">;
 
 export const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -54,6 +58,11 @@ export const routes: Route[] = [
 	{
 		name: "Register",
 		component: RegisterScreen,
+		options: { headerShown: false },
+	},
+	{
+		name: "Home",
+		component: HomeScreen,
 		options: { headerShown: false },
 	},
 ];

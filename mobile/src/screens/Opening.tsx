@@ -32,6 +32,10 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
   const [currentStep, setCurrentStep] = useState<TSteps>(1);
 
   useEffect(() => {
+    if (screenState !== "checking") {
+      return;
+    }
+
     async function fn() {
       const token = await SecureStore.getItemAsync(AUTH_KEY);
       if (!token) {
@@ -43,7 +47,7 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
     }
 
     fn();
-  }, []);
+  }, [screenState]);
 
   useQuery({
     queryKey: ["profile"],
@@ -51,8 +55,10 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
       const user = await AuthService.getAuthProfile(token ?? "");
       setUser(user);
 
-      // TODO - send to a better page
-      // navigation.navigate("Opening");
+      setScreenState("checking");
+      setCurrentStep(1);
+
+      navigation.navigate("Home");
 
       return true;
     },
@@ -64,7 +70,7 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
   });
 
   useEffect(() => {
-    if (screenState !== "opening") {
+    if (screenState !== "opening" && screenState !== "checking") {
       return;
     }
 
