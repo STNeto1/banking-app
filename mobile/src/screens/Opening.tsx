@@ -58,7 +58,7 @@ export const OpeningScreen = ({ navigation }: OpeningProps) => {
       setScreenState("checking");
       setCurrentStep(1);
 
-      navigation.navigate("Home");
+      navigation.navigate("Tab");
 
       return true;
     },
